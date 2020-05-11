@@ -1,0 +1,19 @@
+.login {
+    max-width: 800px;
+    margin: auto;
+}
+
+.copyright {
+    border-style: solid;
+    background-color: powderblue;
+    padding: 10px;
+}
+
+span {
+    display: inline-block;
+    text-align: center;
+}
+
+body {
+    background-image: url('images/Login-BG.png');
+}

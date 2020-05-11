@@ -2,36 +2,25 @@
 
 <head>
     <link rel="stylesheet" href="Login.css">
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="294184945438-apd7ktfqguua67c4u06oq69sajq7nteq.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 
-<div class="login">
-    <div class="header">
-        <img src="images/GoTutor.png" width="800">
+<!--TODO: Must verify profile is UCSD-->
+<html>
+    <div class="bg-image">
+        <div class="fg-text">
+            <h1>GoTutor! by TSI.</h1>
+            <p>The tutor-focused solution.</p>
+            <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark" data-width="300"></div>
+        </div>
     </div>
 
-    <html lang="en">
-    <head>
-        <meta name="google-signin-scope" content="profile email">
-        <meta name="google-signin-client_id" content="294184945438-apd7ktfqguua67c4u06oq69sajq7nteq.apps.googleusercontent.com">
-        <script src="https://apis.google.com/js/platform.js" async defer></script>
-    </head>
-    <body>
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-    <script>
-        function onSignIn(googleUser) {
-            // TODO: Use googleProfile to verify account is UCSD
-            // Reference: https://developers.google.com/identity/sign-in/web
-            var profile = googleUser.getBasicProfile();
-            var id_token = googleUser.getAuthResponse().id_token;
-        }
-    </script>
-    </body>
-    </html>
-
-    <span class="copyright">
+    <div class="copyright">
         <span>This project is considered proprietary software of the following named individuals.</span><br>
         <span>Reproduction of any code or design on this site is prohibited in accordance with the UCSD policy of Academic integrity.</span><br>
         <span>This site should only be referenced for grading the assignment given in CSE 110 by instructor Gary Gillespie.</span><br>
-        <span>This software is not intended for use outside of the CSE 110 team. Use at your own caution.</span><br>
-    </span>
-</div>
+        <span>This software is not intended for use outside of the CSE 110 team. Use at your own caution.</span>
+    </div>
+</html>

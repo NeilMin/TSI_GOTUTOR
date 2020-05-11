@@ -1,6 +1,5 @@
 body, html {
     height: 100%;
-    overflow: hidden;
 }
 
 h1, span, p {
@@ -27,6 +26,5 @@ h1, span, p {
 
 .copyright {
     text-align: center;
-    width: 100%;
-    padding: 20px;
+    padding-top: 20px;
 }

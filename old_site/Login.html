@@ -16,11 +16,27 @@
              data-onsuccess="onSignIn"
              data-theme="dark"
              data-width="300"></div>
+        <div id="login-failed-reason"></div>
         <script>
+            function isAuthenticated(){
+                if (this.readyState == 4 && this.status == 200) {
+                    let response=JSON.parse(this.responseText);
+                    if (response.success) {
+                        for (userInfo in response.userInfos){
+                            sessionStorage.setItem(userInfo,response.userInfos[userInfo]);
+                        }
+                        window.location.replace("Success.html");
+                    }else{
+                        document.getElementById("login-login-failed-reason").innerHTML=response.failedReason;
+                    }
+                }
+            }
             function onSignIn(googleUser) {
-                currentUser = googleUser.getBasicProfile();
-                //TODO: Load user's assets
-                window.location.replace("Success.html");
+                let id_token=googleUser.getAuthResponse().id_token;
+                xhr=new XMLHttpRequest();
+                xhr.addEventListener("load",isAuthenticated);
+                xhr.open("POST",'googleAuth',true);
+                xhr.send(id_token);
             }
         </script>
     </div>

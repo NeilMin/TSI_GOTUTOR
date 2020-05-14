@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<head>
+<script type="module" src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script type="module" src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+</head>
+<body>
 <p>You did it!</p>
+<table>
+    <tr>
+        <td>name</td>
+        <td id="name"></td>
+    </tr>
+    <tr>
+        <td>email</td>
+        <td id="email"></td>
+    </tr>
+    <tr>
+        <td>picture</td>
+        <td id="picture"></td>
+    </tr>
+</table>
+<script>
+    window.addEventListener('load', (event) => {
+        document.getElementById('name').textContent=sessionStorage.getItem('name');
+        document.getElementById('email').textContent=sessionStorage.getItem('email');
+        var script=document.createElement("script");
+        script.src="./success-image.js"
+        document.head.appendChild(script);
+    });
+</script>
+</body>
+

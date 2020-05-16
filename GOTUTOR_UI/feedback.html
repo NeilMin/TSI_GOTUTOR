@@ -1,76 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Feedback</title>
 </head>
 
 <body>
-    <div class="container">
-        <img src="UI_image/GoTutor.png" alt="logo" class="logo" 
-        height="60" width=180>
+<div class="container">
+    <img src="images/GoTutor.png" alt="logo" class="logo"
+         height="60" width=180>
 
-        <nav>
-            <ul>
-                <li class="classrooms">Classrooms
-                    <li><button>Classroom1</button></li>
-                    <li><button>Classroom2</button></li>
-                    <li><button>Classroom3</button></li>
-                    <li><button>Classroom4</button></li>
-                </li>
-                <li><a href="#">Writeup</a></li>
-                <li><a href="#">Create Classrom</a></li>
-                <li><a href="#">Appointment</a></li>
-                <li><a href="#">Forum</a></li>
-                <li><a href="#">Tutor</a></li>
-                <li><a href="#">Ticket</a></li>
-                <li><a href="#">Setting</a></li>
-                <li><a href="#">Help</a></li>
-                <li><a href="#">Log Out</a></li>
-            </ul>
-        </nav>
-    </div>
-    <div class="student">
-        Section for student:
-        <br />
-        <label>Select an appointment to send feedback</label>
-        <select id = "pastAppointmentList">
-            <option value = "1">one</option>
-            <option value = "2">two</option>
-            <option value = "3">three</option>
-            <option value = "4">four</option>
-        </select>
-        <button id="select">Select</button>
+    <nav>
         <ul>
-            A list of single choice questions
-            <li id="Q1">Question1</li>
-            <select id = "answerList">
-                <option value = "1">one</option>
-                <option value = "2">two</option>
-                <option value = "3">three</option>
-                <option value = "4">four</option>
-            </select>
-            <li id="Q2">Question2</li>
-            <select id = "answerList">
-                <option value = "1">one</option>
-                <option value = "2">two</option>
-                <option value = "3">three</option>
-                <option value = "4">four</option>
-            </select>
-            <li id="Q3">Question3</li>
-            <select id = "answerList">
-                <option value = "1">one</option>
-                <option value = "2">two</option>
-                <option value = "3">three</option>
-                <option value = "4">four</option>
-            </select>
-            <li id="Q4">Question4</li>
-            <select id = "answerList">
-                <option value = "1">one</option>
-                <option value = "2">two</option>
-                <option value = "3">three</option>
-                <option value = "4">four</option>
-            </select>
+            <li class="classrooms">Classrooms
+            <li>
+                <button>Classroom1</button>
+            </li>
+            <li>
+                <button>Classroom2</button>
+            </li>
+            <li>
+                <button>Classroom3</button>
+            </li>
+            <li>
+                <button>Classroom4</button>
+            </li>
+            </li>
+            <li><a href="#">Writeup</a></li>
+            <li><a href="#">Create Classrom</a></li>
+            <li><a href="#">Appointment</a></li>
+            <li><a href="#">Forum</a></li>
+            <li><a href="#">Tutor</a></li>
+            <li><a href="#">Ticket</a></li>
+            <li><a href="#">Setting</a></li>
+            <li><a href="#">Help</a></li>
+            <li><a href="#">Log Out</a></li>
         </ul>
-        <button id="submit">Submit</button>
-    </div>
+    </nav>
+</div>
+<div class="student">
+    Section for student:
+    <br/>
+    <label>Select an appointment to send feedback</label>
+    <select id="pastAppointmentList">
+        <option value="1">one</option>
+        <option value="2">two</option>
+        <option value="3">three</option>
+        <option value="4">four</option>
+    </select>
+    <button id="select">Select</button>
+    <ul>
+        A list of single choice questions
+        <li id="Q1">Question1</li>
+        <select id="answerList">
+            <option value="1">one</option>
+            <option value="2">two</option>
+            <option value="3">three</option>
+            <option value="4">four</option>
+        </select>
+        <li id="Q2">Question2</li>
+        <select id="answerList">
+            <option value="1">one</option>
+            <option value="2">two</option>
+            <option value="3">three</option>
+            <option value="4">four</option>
+        </select>
+        <li id="Q3">Question3</li>
+        <select id="answerList">
+            <option value="1">one</option>
+            <option value="2">two</option>
+            <option value="3">three</option>
+            <option value="4">four</option>
+        </select>
+        <li id="Q4">Question4</li>
+        <select id="answerList">
+            <option value="1">one</option>
+            <option value="2">two</option>
+            <option value="3">three</option>
+            <option value="4">four</option>
+        </select>
+    </ul>
+    <button id="submit">Submit</button>
+</div>
 </body>

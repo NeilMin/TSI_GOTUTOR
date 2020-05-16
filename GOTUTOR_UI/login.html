@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 
 <head>
-    <link rel="stylesheet" href="Login.css">
+    <link rel="stylesheet" href="login.css">
     <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="294184945438-apd7ktfqguua67c4u06oq69sajq7nteq.apps.googleusercontent.com">
+    <meta name="google-signin-client_id"
+          content="294184945438-apd7ktfqguua67c4u06oq69sajq7nteq.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 
@@ -18,24 +19,25 @@
              data-width="300"></div>
         <div id="login-failed-reason"></div>
         <script>
-            function isAuthenticated(){
-                if (this.readyState == 4 && this.status == 200) {
-                    let response=JSON.parse(this.responseText);
+            function isAuthenticated() {
+                if (this.readyState === 4 && this.status === 200) {
+                    let response = JSON.parse(this.responseText);
                     if (response.success) {
-                        for (userInfo in response.userInfos){
-                            sessionStorage.setItem(userInfo,response.userInfos[userInfo]);
+                        for (userInfo in response.userInfos) {
+                            sessionStorage.setItem(userInfo, response.userInfos[userInfo]);
                         }
-                        window.location.replace("Success.html");
-                    }else{
-                        document.getElementById("login-login-failed-reason").innerHTML=response.failedReason;
+                        window.location.replace("appointment.html");
+                    } else {
+                        document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;
                     }
                 }
             }
+
             function onSignIn(googleUser) {
-                let id_token=googleUser.getAuthResponse().id_token;
-                xhr=new XMLHttpRequest();
-                xhr.addEventListener("load",isAuthenticated);
-                xhr.open("POST",'googleAuth',true);
+                let id_token = googleUser.getAuthResponse().id_token;
+                xhr = new XMLHttpRequest();
+                xhr.addEventListener("load", isAuthenticated);
+                xhr.open("POST", 'googleAuth', true);
                 xhr.send(id_token);
             }
         </script>

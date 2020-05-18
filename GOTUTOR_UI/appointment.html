@@ -3,55 +3,83 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
+    
+    <!-- full Calendar import -->
     <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet' />
     <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet' />
     <link href='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.css' rel='stylesheet' />
     <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.js'></script>
     <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.js'></script>
     <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.js'></script>
+    
+    <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
 
-
-
   <script>
-  const socket = io.connect('http://gotutor.com');
+  //connect web socket for communicating reservation made by this user and other user
+  var socket;
+
   document.addEventListener('DOMContentLoaded', function() {
+    //The ID of element to put calendar is 'cal'
     var calendarEl = document.getElementById('cal');
-    const colorMap=new Map([["yes","blue"],["no","grey"],["me","yellow"]]);
+    
+    //mapping time slot status to color 
+    const colorMap=new Map([["yes","blue"],["no","grey"],["me","red"]]);
+
+    //Initialize calendar
     var calendar = new FullCalendar.Calendar(calendarEl, {
       events: '/fetchAppointments',
       plugins: [ 'timeGrid' ],
       eventClick:function( eventClickInfo ){
+          if (eventClickInfo.event.extendedProps.available != "yes"){
+              var message=document.createElement("p");
+              message.textContent="This slot have been reserved";
+              eventClickInfo.el.appendChild(message);
+              setTimeout(()=>{message.remove()},5000);
+              return;
+          }
+          //prompt up for user to male appointment
           var prompt=document.createElement("div");
-          
+          //text input to enter question
           var question=document.createElement("textarea");
           question.value="What is your question?";
           prompt.appendChild(question);
-          
+          //submit button
           var submit=document.createElement("button")
           var submitText=document.createElement("p")
           submitText.textContent="submit"
           submit.appendChild(submitText);
           submit.onclick=function(){
+              //tell backend reservation made
               socket.emit('reserve',{id: eventClickInfo.event.id,question:question.value})
+              eventClickInfo.event.setExtendedProp("available","me");
+              eventClickInfo.event.setProp("backgroundColor",colorMap.get("me"));
+              //remove the prompt
               prompt.remove()
           }
           prompt.appendChild(submit)
-          
+          //Prevent repetitive attachment of frames
           prompt.onclick=function(e){e.stopPropagation()};
           eventClickInfo.el.appendChild(prompt)
-          
       },
       eventDataTransform :function(info){
           //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
           info.backgroundColor=colorMap.get(info.available)
           console.log(info)
       },
+      eventSourceSuccess: function(){
+          socket= io.connect('http://gotutor.com');
+          socket.on('new',(data)=>{
+              var toModify=calendar.getEventById(data);
+              toModify.setExtendedProp("available","no");
+              toModify.setProp("backgroundColor",colorMap.get("no"));
+          })
+        },
       defaultView: 'timeGridWeek',
       header: false
     });
 
-    console.log(calendar.render());
+    calendar.render();
 
     //setTimeout(()=>{console.log(calendar.getEvents())},1000)
   });

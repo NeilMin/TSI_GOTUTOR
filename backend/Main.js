@@ -26,6 +26,7 @@ sio.on("connection",function(socket){
     socket.on("reserve",(data)=>{
         console.log(data);
         console.log("from"+socket.request.session.uid);
+        socket.broadcast.emit('new',data.id);
     })
 })
 
@@ -45,9 +46,8 @@ app.get('/fetchAppointments', function (req, res) {
     res.json([{
         id: 1,
         title: "tutor",
-        daysOfWeek: ['4'],
-        startTime: '10:45:00',
-        endTime: '12:45:00',
+        start:"2020-05-20T10:45:00",
+        end: "2020-05-20T12:45:00",
         available: "yes"
     },
     {
@@ -55,7 +55,7 @@ app.get('/fetchAppointments', function (req, res) {
         title: "tutor",
         start:"2020-05-18T10:45:00",
         end: "2020-05-18T12:45:00",
-        available: "me",
+        available: "yes",
     }
     ]
     )
@@ -63,6 +63,12 @@ app.get('/fetchAppointments', function (req, res) {
 
 app.post('/googleAuth', login);
 
+//back door
+
+app.get('/testUser',function(req,res){
+    req.session.uid='test';
+    res.redirect("/appointment.html")
+});
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");

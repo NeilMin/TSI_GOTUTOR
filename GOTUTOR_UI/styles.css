@@ -1,7 +1,7 @@
 body, html {
     height: 100%;
-    color: #00C6D7;
-    background-color: #182B49;
+    color: rgb(39,163,228); /*Lighter blue from image (made slightly lighter)*/
+    background-color: rgb(4,43,72); /* Dark blue from image*/
 }
 
 h1, span, p {
@@ -35,7 +35,7 @@ nav a {
     color: #FC8900;
     text-decoration: none;
     position: relative;
-    
+
 }
 
 nav a:hover {
@@ -61,8 +61,7 @@ nav a:hover::before {
 }
 
 .bg-main {
-    /*background-image: url("images/Geisel.jpg");*/
-    
+    background-image: url("images/Geisel.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -87,7 +86,10 @@ nav a:hover::before {
     width: 80%;
     margin: 30px;
     outline-style: dotted;
-    
+    outline-color: #F3E500;
+    background-color: rgb(4,43,72);
+    opacity: .9;
+
 }
 
 /*.both {

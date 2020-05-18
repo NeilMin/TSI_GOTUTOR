@@ -3,6 +3,31 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
+    <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet' />
+    <link href='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.css' rel='stylesheet' />
+    <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.js'></script>
+
+
+
+  <script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ 'timeGrid' ],
+      timeZone: 'UTC',
+      defaultView: 'timeGridWeek',
+      header: false
+    });
+
+    calendar.render();
+  });
+
+</script>
 </head>
 
 <body>
@@ -42,6 +67,7 @@
         </nav>
         <div class="content">
             <div class="student">
+				<div id="calendar"/>
                 Section for student:
                 <br/>
                 <table id="submittedAppoitment">

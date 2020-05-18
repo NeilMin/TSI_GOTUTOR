@@ -19,8 +19,7 @@ nav {
 
 nav ul {
     list-style: none;
-    color: #006A96;
-    text-transform: uppercase;
+    color: #C69214;
     font-size: 30px;
 }
 
@@ -31,19 +30,19 @@ nav li {
 }
 
 nav a {
-    color: #006A96;
+    color: #C69214;
     text-decoration: none;
     position: relative;
 }
 
 nav a:hover {
-    color: #182B49;
+    color: #FFCD00;
 }
 
 nav a::before {
     content: "";
     height: 5px;
-    background-color: #182B49;
+    background-color: #FFCD00;
     position: absolute;
     width: 100%;
     bottom: 0;
@@ -69,7 +68,7 @@ nav a:hover::before {
     background-repeat: no-repeat;
     background-size: cover;
     position: relative;
-    height: 80%;
+    height: 90%;
 }
 
 .content {

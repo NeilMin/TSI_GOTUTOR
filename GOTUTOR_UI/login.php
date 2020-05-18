@@ -1,15 +1,15 @@
-<!DOCTYPE html>
-
+<!DOCTYPE HTML>
 <head>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="styles.css">
     <meta name="google-signin-scope" content="profile email">
     <meta name="google-signin-client_id"
           content="294184945438-apd7ktfqguua67c4u06oq69sajq7nteq.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <title>GoTutor!</title>
 </head>
 
 <body>
-<div class="bg-image">
+<div class="bg-main">
     <div class="fg-text">
         <h1>GoTutor! by TSI.</h1>
         <p>The tutor-focused solution.</p>

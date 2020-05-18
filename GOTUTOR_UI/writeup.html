@@ -28,7 +28,7 @@
                 </li>
             </ul>
             <ul class="navigation">
-                <li style="color: #808080;">Assignment</li>
+                <li style="color: #F3E500;">Assignment</li>
                 <li><a href="classroom.html">Classroom</a></li>
                 <li><a href="appointment.html">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
@@ -41,8 +41,10 @@
         </nav>
         <div class="content">
             <div class="both">
+                Section for both:
+                <br />
                 <p id="writeupText">
-                    writeupText, a PDF file will be displayed here.
+                    Current writeups will be viewable here, a PDF file could be displayed here.
                 </p>
                 <button id="view">View writeup in pdf</button>
                 <button id="download">Download write up</button>
@@ -51,10 +53,15 @@
             <div class="student">
                 Section for student:
                 <form>
-                    a form to create a ticket
+                    Form to submit a ticket to the queue:
                     <br/>
                     <label>
-                        TO DO
+                        Description of problem:
+                        <input/>
+                    </label>
+                    <br/>
+                    <label>
+                        What have you done attempting to fix the problem:
                         <input/>
                     </label>
                 </form>
@@ -64,7 +71,9 @@
             <br/>
             <div class="tutor">
                 Section for tutor:
-                <button id="upload">Upload writeup</button>
+                <button id="upload">Upload new writeup</button>
+                <br/>
+                <button id="upload">Remove current writeup</button>
             </div>
         </div>
     </div>

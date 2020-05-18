@@ -1,5 +1,7 @@
 body, html {
     height: 100%;
+    color: rgb(39,163,228); /*Lighter blue from image (made slightly lighter)*/
+    background-color: rgb(4,43,72); /* Dark blue from image*/
 }
 
 h1, span, p {
@@ -30,19 +32,20 @@ nav li {
 }
 
 nav a {
-    color: #C69214;
+    color: #FC8900;
     text-decoration: none;
     position: relative;
+
 }
 
 nav a:hover {
-    color: #FFCD00;
+    color: #F3E500;
 }
 
 nav a::before {
     content: "";
     height: 5px;
-    background-color: #FFCD00;
+    background-color: #F3E500;
     position: absolute;
     width: 100%;
     bottom: 0;
@@ -58,7 +61,7 @@ nav a:hover::before {
 }
 
 .bg-main {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("images/Geisel.jpg");
+    background-image: url("images/Geisel.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -81,23 +84,29 @@ nav a:hover::before {
 .content {
     float: right;
     width: 80%;
+    margin: 30px;
+    outline-style: dotted;
+    outline-color: #F3E500;
+    background-color: rgb(4,43,72);
+    opacity: .9;
+
 }
 
-.both {
+/*.both {
     outline-style: dotted;
-}
+}*/
 
 .both li {
     list-style-type: none;
 }
 
-.student {
+/*.student {
     outline-style: dotted;
-}
+}*/
 
-.tutor {
+/*.tutor {
     outline-style: dotted;
-}
+}*/
 
 .fg-text {
     text-align: center;

@@ -10,7 +10,7 @@ h1, span, p {
 
 img {
     height: 80px;
-    width: 200px;
+    width: 220px;
 }
 
 nav {
@@ -66,7 +66,8 @@ nav a:hover::before {
     background-repeat: no-repeat;
     background-size: cover;
     position: relative;
-    height: 90%;
+    height: 100%;
+    width: 100%;
 }
 
 .container {

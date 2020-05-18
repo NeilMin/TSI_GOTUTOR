@@ -1,7 +1,7 @@
 body, html {
     height: 100%;
-    color: rgb(39,163,228); /*Lighter blue from image (made slightly lighter)*/
-    background-color: rgb(4,43,72); /* Dark blue from image*/
+    color: rgb(39, 163, 228); /*Lighter blue from image (made slightly lighter)*/
+    background-color: rgb(4, 43, 72); /* Dark blue from image*/
 }
 
 h1, span, p {
@@ -10,7 +10,7 @@ h1, span, p {
 
 img {
     height: 80px;
-    width: 200px;
+    width: 220px;
 }
 
 nav {
@@ -67,6 +67,16 @@ nav a:hover::before {
     background-size: cover;
     position: relative;
     height: 90%;
+    width: 100%;
+}
+
+.bg-login {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("images/Geisel.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    height: 80%;
 }
 
 .container {
@@ -75,10 +85,10 @@ nav a:hover::before {
 }
 
 .classrooms {
-    height:200px;
-    width:100%;
-    overflow:hidden;
-    overflow-y:scroll;
+    height: 200px;
+    width: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
 }
 
 .content {
@@ -87,7 +97,7 @@ nav a:hover::before {
     margin: 30px;
     outline-style: dotted;
     outline-color: #F3E500;
-    background-color: rgb(4,43,72);
+    background-color: rgb(4, 43, 72);
     opacity: .9;
 
 }

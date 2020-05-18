@@ -6,25 +6,54 @@
     <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet' />
     <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet' />
     <link href='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.css' rel='stylesheet' />
-    <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.js'></script>
-    <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.js'></script>
-    <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
 
 
 
   <script>
-
+  const socket = io.connect('http://gotutor.com');
   document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-
+    var calendarEl = document.getElementById('cal');
+    const colorMap=new Map([["yes","blue"],["no","grey"],["me","yellow"]]);
     var calendar = new FullCalendar.Calendar(calendarEl, {
+      events: '/fetchAppointments',
       plugins: [ 'timeGrid' ],
-      timeZone: 'UTC',
+      eventClick:function( eventClickInfo ){
+          var prompt=document.createElement("div");
+          
+          var question=document.createElement("textarea");
+          question.value="What is your question?";
+          prompt.appendChild(question);
+          
+          var submit=document.createElement("button")
+          var submitText=document.createElement("p")
+          submitText.textContent="submit"
+          submit.appendChild(submitText);
+          submit.onclick=function(){
+              socket.emit('reserve',{id: eventClickInfo.event.id,question:question.value})
+              prompt.remove()
+          }
+          prompt.appendChild(submit)
+          
+          prompt.onclick=function(e){e.stopPropagation()};
+          eventClickInfo.el.appendChild(prompt)
+          
+      },
+      eventDataTransform :function(info){
+          //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
+          info.backgroundColor=colorMap.get(info.available)
+          console.log(info)
+      },
       defaultView: 'timeGridWeek',
       header: false
     });
 
-    calendar.render();
+    console.log(calendar.render());
+
+    //setTimeout(()=>{console.log(calendar.getEvents())},1000)
   });
 
 </script>
@@ -67,10 +96,10 @@
         </nav>
         <div class="content">
             <div class="student">
-				<div id="calendar"/>
+				<div id="cal"/>
                 Section for student:
                 <br/>
-                <table id="submittedAppoitment">
+                <table id="submittedAppointments">
                     Upcoming appointments submitted
                     <tr>
                         <th>Number</th>
@@ -145,7 +174,7 @@
                         <td>Installation problem</td>
                         <td>0514</td>
                         <td>1925</td>
-                        <td>Declined/Apporved</td>
+                        <td>Declined/Approved</td>
                     </tr>
                 </table>
             </div>
@@ -157,7 +186,7 @@
                     Accepted appointments
                     <tr>
                         <th>Number</th>
-                        <th>Studnet name</th>
+                        <th>Student name</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Problem</th>
@@ -173,7 +202,7 @@
                         <td>Installation problem</td>
                         <td>0514</td>
                         <td>1924</td>
-                        <td>Apporved</td>
+                        <td>Approved</td>
                     </tr>
                 </table>
                 <br />
@@ -219,7 +248,7 @@
                     <option value="3">three</option>
                     <option value="4">four</option>
                 </select>
-                <button id="Apporve">Apporve</button>
+                <button id="Approve">Approve</button>
                 <button id="Decline">Decline</button>
                 <br/>
                 <br />
@@ -243,7 +272,7 @@
                         <td>Installation problem</td>
                         <td>0514</td>
                         <td>1925</td>
-                        <td>Declined/Apporved</td>
+                        <td>Declined/Approved</td>
                     </tr>
                 </table>
                 <br />

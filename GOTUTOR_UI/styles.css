@@ -57,11 +57,6 @@ nav a:hover::before {
     transform: scaleX(1);
 }
 
-.container {
-    width: 100%;
-    height: 100%;
-}
-
 .bg-main {
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("images/Geisel.jpg");
     background-position: center;
@@ -69,6 +64,18 @@ nav a:hover::before {
     background-size: cover;
     position: relative;
     height: 90%;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+}
+
+.classrooms {
+    height:200px;
+    width:100%;
+    overflow:hidden;
+    overflow-y:scroll;
 }
 
 .content {

@@ -26,7 +26,7 @@
                         for (userInfo in response.userInfos) {
                             sessionStorage.setItem(userInfo, response.userInfos[userInfo]);
                         }
-                        window.location.replace("appointment.html");
+                        window.location.replace("appointment.html#ClassroomID=1"); //TODO: Load some classroom from the user!
                     } else {
                         document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;
                     }

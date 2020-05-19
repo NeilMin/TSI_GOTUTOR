@@ -24,7 +24,7 @@ app.use(cookieSession({
     secret: 'devel'
 }));
 
-app.get('/appointment.php', function (req, res, next) {
+app.get('/appointment.html', function (req, res, next) {
     console.log(req.session.uid);
     next();
 });

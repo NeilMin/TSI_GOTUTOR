@@ -11,7 +11,7 @@ const httpServer = http.createServer(app);
 
 // Google Authentication
 const {OAuth2Client} = require('google-auth-library');
-const CLIENT_ID = "294184945438-apd7ktfqguua67c4u06oq69sajq7nteq.apps.googleusercontent.com";
+const CLIENT_ID = "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com";
 const googleClient = new OAuth2Client(CLIENT_ID);
 
 app.use(function (req, res, next) {
@@ -24,7 +24,7 @@ app.use(cookieSession({
     secret: 'devel'
 }));
 
-app.get('/appointment.html', function (req, res, next) {
+app.get('/appointment.php', function (req, res, next) {
     console.log(req.session.uid);
     next();
 });

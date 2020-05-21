@@ -16,9 +16,66 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
 
   <script>
+
   //connect web socket for communicating reservation made by this user and other user
   var socket;
 
+  //view->controller
+  function reserveAppointment(officeHourId,question) {
+    socket.emit('reserve', { id:officeHourId, question:question});
+  }
+  
+  //controller->view
+  //listen for new reservation from other users
+  function initPeerListener(){
+    socket = io.connect('http://gotutor.com');
+    socket.on('new', (data) => {
+      var toModify = calendar.getEventById(data);
+      toModify.setExtendedProp("available", "no");
+      toModify.setProp("backgroundColor", colorMap.get("no"));
+    })
+  }
+  //Translate REST API response to the format accepted by full calendar api
+  function transformEvent(info){
+    //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
+    info.backgroundColor = colorMap.get(info.available)
+    console.log(info)
+  }
+  
+  //view
+  function getNewAppointmentDialog(event) {
+    //prompt up for user to make appointment
+    var prompt=document.createElement("div");
+    //text input to enter question
+    var question = document.createElement("textarea");
+    question.value = "What is your question?";
+    prompt.appendChild(question);
+    //submit button
+    var submit = document.createElement("button")
+    var submitText = document.createElement("p")
+    submitText.textContent = "submit"
+    submit.appendChild(submitText);
+    submit.onclick = function () {
+      //tell backend reservation made
+      reserveAppointment(event.id,question.value )
+      event.setExtendedProp("available", "me");
+      event.setProp("backgroundColor", colorMap.get("me"));
+      //remove the prompt
+      prompt.remove()
+    }
+    prompt.appendChild(submit)
+    //Prevent repetitive attachment of frames
+    prompt.onclick = function (e) { e.stopPropagation() };
+    return prompt;
+  }
+  
+  function getOccupiedDialog(){
+    var message=document.createElement("p");
+    message.textContent = "This slot have been reserved";
+    setTimeout(() => { message.remove() }, 5000);
+    return message;
+  }
+  
   document.addEventListener('DOMContentLoaded', function() {
     //The ID of element to put calendar is 'cal'
     var calendarEl = document.getElementById('cal');
@@ -32,49 +89,13 @@
       plugins: [ 'timeGrid' ],
       eventClick:function( eventClickInfo ){
           if (eventClickInfo.event.extendedProps.available != "yes"){
-              var message=document.createElement("p");
-              message.textContent="This slot have been reserved";
               eventClickInfo.el.appendChild(message);
-              setTimeout(()=>{message.remove()},5000);
               return;
           }
-          //prompt up for user to male appointment
-          var prompt=document.createElement("div");
-          //text input to enter question
-          var question=document.createElement("textarea");
-          question.value="What is your question?";
-          prompt.appendChild(question);
-          //submit button
-          var submit=document.createElement("button")
-          var submitText=document.createElement("p")
-          submitText.textContent="submit"
-          submit.appendChild(submitText);
-          submit.onclick=function(){
-              //tell backend reservation made
-              socket.emit('reserve',{id: eventClickInfo.event.id,question:question.value})
-              eventClickInfo.event.setExtendedProp("available","me");
-              eventClickInfo.event.setProp("backgroundColor",colorMap.get("me"));
-              //remove the prompt
-              prompt.remove()
-          }
-          prompt.appendChild(submit)
-          //Prevent repetitive attachment of frames
-          prompt.onclick=function(e){e.stopPropagation()};
-          eventClickInfo.el.appendChild(prompt)
+          eventClickInfo.el.appendChild(getNewAppointmentDialog(eventClickInfo.event));
       },
-      eventDataTransform :function(info){
-          //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
-          info.backgroundColor=colorMap.get(info.available)
-          console.log(info)
-      },
-      eventSourceSuccess: function(){
-          socket= io.connect('http://gotutor.com');
-          socket.on('new',(data)=>{
-              var toModify=calendar.getEventById(data);
-              toModify.setExtendedProp("available","no");
-              toModify.setProp("backgroundColor",colorMap.get("no"));
-          })
-        },
+      eventDataTransform :transformEvent,
+      eventSourceSuccess: initPeerListener,
       defaultView: 'timeGridWeek',
       header: false
     });

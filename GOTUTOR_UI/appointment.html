@@ -19,7 +19,8 @@
 
   //connect web socket for communicating reservation made by this user and other user
   var socket;
-
+  //mapping time slot status to color 
+  const colorMap = new Map([["yes", "blue"], ["no", "grey"], ["me", "red"]]);
   //view->controller
   function reserveAppointment(officeHourId,question) {
     socket.emit('reserve', { id:officeHourId, question:question});
@@ -27,13 +28,9 @@
   
   //controller->view
   //listen for new reservation from other users
-  function initPeerListener(){
+  function initPeerListener(calendar){
     socket = io.connect('http://gotutor.com');
-    socket.on('new', (data) => {
-      var toModify = calendar.getEventById(data);
-      toModify.setExtendedProp("available", "no");
-      toModify.setProp("backgroundColor", colorMap.get("no"));
-    })
+    socket.on('new', markOccupied)
   }
   //Translate REST API response to the format accepted by full calendar api
   function transformEvent(info){
@@ -43,6 +40,8 @@
   }
   
   //view
+  var calendar;
+  
   function getNewAppointmentDialog(event) {
     //prompt up for user to make appointment
     var prompt=document.createElement("div");
@@ -76,29 +75,33 @@
     return message;
   }
   
+  function markOccupied(officeHourId){
+    var toModify = calendar.getEventById(officeHourId);
+    toModify.setExtendedProp("available", "no");
+    toModify.setProp("backgroundColor", colorMap.get("no"));
+  }
+  
   document.addEventListener('DOMContentLoaded', function() {
     //The ID of element to put calendar is 'cal'
     var calendarEl = document.getElementById('cal');
-    
-    //mapping time slot status to color 
-    const colorMap=new Map([["yes","blue"],["no","grey"],["me","red"]]);
 
     //Initialize calendar
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    calendar = new FullCalendar.Calendar(calendarEl, {
       events: '/fetchAppointments',
       plugins: [ 'timeGrid' ],
       eventClick:function( eventClickInfo ){
           if (eventClickInfo.event.extendedProps.available != "yes"){
-              eventClickInfo.el.appendChild(message);
+              eventClickInfo.el.appendChild(getOccupiedDialog());
               return;
           }
           eventClickInfo.el.appendChild(getNewAppointmentDialog(eventClickInfo.event));
       },
       eventDataTransform :transformEvent,
-      eventSourceSuccess: initPeerListener,
+      eventSourceSuccess: initPeerListener(calendar,markOccupied),
       defaultView: 'timeGridWeek',
       header: false
     });
+    
 
     calendar.render();
 

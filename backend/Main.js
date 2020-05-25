@@ -10,6 +10,18 @@ const app = express();
 const http = require('http');
 const httpServer = http.createServer(app);
 
+// Multer
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + req.session.uid + '.pdf')
+    }
+});
+const upload = multer({storage: storage});
+
 const cookieSessionMiddleware=cookieSession({
     name: 's',
     secret: 'devel'
@@ -20,7 +32,7 @@ var sio = require("socket.io")(httpServer);
 sio.use(function(socket,next){
     //console.log(socket.request);
     cookieSessionMiddleware(socket.request,socket.request.res||{},next);
-})
+});
 
 sio.on("connection",function(socket){
     socket.on("reserve",(data)=>{
@@ -28,7 +40,7 @@ sio.on("connection",function(socket){
         console.log("from"+socket.request.session.uid);
         socket.broadcast.emit('new',data.id);
     })
-})
+});
 
 
 
@@ -59,7 +71,7 @@ app.get('/fetchAppointments', function (req, res) {
     }
     ]
     )
-})
+});
 
 app.post('/googleAuth', login);
 
@@ -68,6 +80,17 @@ app.post('/googleAuth', login);
 app.get('/testUser',function(req,res){
     req.session.uid='test';
     res.redirect("/appointment.html")
+});
+
+
+app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
+    const file = req.file;
+    if (!file) {
+        const error = new Error('Please upload a file');
+        error.httpStatusCode = 400;
+        return next(error)
+    }
+    res.send(file)
 });
 
 httpServer.listen(80, function () {

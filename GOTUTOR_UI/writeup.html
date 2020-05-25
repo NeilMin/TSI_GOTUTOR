@@ -40,9 +40,13 @@
             </ul>
         </nav>
         <div class="content">
+            <form action="/uploadfile" enctype="multipart/form-data" method="POST">
+                <input type="file" name="writeup"/>
+                <input type="submit" value="Upload a file"/>
+            </form>
             <div class="both">
                 Section for both:
-                <br />
+                <br/>
                 <p id="writeupText">
                     Current writeups will be viewable here, a PDF file could be displayed here.
                 </p>
@@ -77,5 +81,6 @@
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

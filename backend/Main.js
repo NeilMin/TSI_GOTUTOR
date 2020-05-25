@@ -1,3 +1,4 @@
+const login = require('./Login.js')
 // Cookie
 const cookieSession = require('cookie-session');
 
@@ -9,58 +10,65 @@ const app = express();
 const http = require('http');
 const httpServer = http.createServer(app);
 
-// Google Authentication
-const {OAuth2Client} = require('google-auth-library');
-const CLIENT_ID = "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com";
-const googleClient = new OAuth2Client(CLIENT_ID);
-
-app.use(function (req, res, next) {
-    console.log(req.path + " requested");
-    next();
-});
-
-app.use(cookieSession({
+const cookieSessionMiddleware=cookieSession({
     name: 's',
     secret: 'devel'
-}));
-
-app.get('/appointment.html', function (req, res, next) {
-    console.log(req.session.uid);
-    next();
 });
+
+var sio = require("socket.io")(httpServer);
+
+sio.use(function(socket,next){
+    //console.log(socket.request);
+    cookieSessionMiddleware(socket.request,socket.request.res||{},next);
+})
+
+sio.on("connection",function(socket){
+    socket.on("reserve",(data)=>{
+        console.log(data);
+        console.log("from"+socket.request.session.uid);
+        socket.broadcast.emit('new',data.id);
+    })
+})
+
+
 
 app.use('/', express.static('GOTUTOR_UI'));
 
-app.post('/googleAuth', function (req, res) {
-    let buffer = "";
-    req.on('data', chunk => {
-        buffer += chunk;
-    });
-    req.on('end', async () => {
-        // Reference: https://developers.google.com/identity/sign-in/web/backend-auth
-        try {
-            // No need to verify if the account is UCSD as the API is configured to only
-            // allow accounts that belong to the UCSD organization.
-            const ticket = await googleClient.verifyIdToken({
-                idToken: buffer,
-                audience: CLIENT_ID,
-            });
+app.use(cookieSessionMiddleware);
 
-            // Get user information and put into JSON
-            const payload = ticket.getPayload();
-            req.session.uid = payload['sub'];
-            req.sessionOptions.maxAge = payload['exp'] * 1e3 - Date.now();
-            res.send(JSON.stringify({
-                success: true,
-                userInfos: (({name, email, picture}) => ({name, email, picture}))(payload)
-            }));
-        } catch (error) {
-            console.log(error);
-            res.send(JSON.stringify({success: false, failedReason: error}));
-        }
-    })
+app.use(function (req, res, next) {
+    console.log(req.path + " requested");
+    console.log("user id is:" + req.session.uid);
+    next();
 });
 
+app.get('/fetchAppointments', function (req, res) {
+    res.json([{
+        id: 1,
+        title: "tutor",
+        start:"2020-05-20T10:45:00",
+        end: "2020-05-20T12:45:00",
+        available: "yes"
+    },
+    {
+        id: 2,
+        title: "tutor",
+        start:"2020-05-18T10:45:00",
+        end: "2020-05-18T12:45:00",
+        available: "yes",
+    }
+    ]
+    )
+})
+
+app.post('/googleAuth', login);
+
+//back door
+
+app.get('/testUser',function(req,res){
+    req.session.uid='test';
+    res.redirect("/appointment.html")
+});
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");

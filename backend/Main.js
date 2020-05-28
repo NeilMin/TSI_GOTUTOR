@@ -1,4 +1,4 @@
-const login = require('./Login.js')
+const login = require('./Login.js');
 // Cookie
 const cookieSession = require('cookie-session');
 
@@ -22,26 +22,25 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
-const cookieSessionMiddleware=cookieSession({
+const cookieSessionMiddleware = cookieSession({
     name: 's',
     secret: 'devel'
 });
 
-var sio = require("socket.io")(httpServer);
+const sio = require("socket.io")(httpServer);
 
-sio.use(function(socket,next){
+sio.use(function (socket, next) {
     //console.log(socket.request);
-    cookieSessionMiddleware(socket.request,socket.request.res||{},next);
+    cookieSessionMiddleware(socket.request, socket.request.res || {}, next);
 });
 
-sio.on("connection",function(socket){
-    socket.on("reserve",(data)=>{
+sio.on("connection", function (socket) {
+    socket.on("reserve", (data) => {
         console.log(data);
-        console.log("from"+socket.request.session.uid);
-        socket.broadcast.emit('new',data.id);
+        console.log("from" + socket.request.session.uid);
+        socket.broadcast.emit('new', data.id);
     })
 });
-
 
 
 app.use('/', express.static('GOTUTOR_UI'));
@@ -56,41 +55,41 @@ app.use(function (req, res, next) {
 
 app.get('/fetchAppointments', function (req, res) {
     res.json([{
-        id: 1,
-        title: "tutor",
-        start:"2020-05-20T10:45:00",
-        end: "2020-05-20T12:45:00",
-        available: "yes"
-    },
-    {
-        id: 2,
-        title: "tutor",
-        start:"2020-05-18T10:45:00",
-        end: "2020-05-18T12:45:00",
-        available: "yes",
-    }
-    ]
+            id: 1,
+            title: "tutor",
+            start: "2020-05-30T10:45:00",
+            end: "2020-05-30T12:45:00",
+            available: "yes"
+        },
+            {
+                id: 2,
+                title: "tutor",
+                start: "2020-05-28T10:45:00",
+                end: "2020-05-28T12:45:00",
+                available: "yes",
+            }
+        ]
     )
 });
 
 app.post('/googleAuth', login);
 
-//back door
-
-app.get('/testUser',function(req,res){
-    req.session.uid='test';
+app.get('/testUser', function (req, res) {
+    req.session.uid = 'test';
     res.redirect("/appointment.html")
 });
 
 
 app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
     const file = req.file;
+
     if (!file) {
         const error = new Error('Please upload a file');
         error.httpStatusCode = 400;
         return next(error)
     }
-    res.send(file)
+
+    res.send(file);
 });
 
 httpServer.listen(80, function () {

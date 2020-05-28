@@ -23,10 +23,16 @@
                 if (this.readyState === 4 && this.status === 200) {
                     let response = JSON.parse(this.responseText);
                     if (response.success) {
-                        for (userInfo in response.userInfos) {
+                        for (const userInfo in response.userInfos) {
                             sessionStorage.setItem(userInfo, response.userInfos[userInfo]);
+                            sessionStorage.setItem("isTutor", "false");
                         }
-                        window.location.replace("appointment.html#ClassroomID=1"); //TODO: Load some classroom from the user!
+
+                        if (sessionStorage.getItem("isTutor") === "true") {
+                            window.location.replace("tutor-appointment.html#ClassroomID=1");
+                        } else {
+                            window.location.replace("student-appointment.html#ClassroomID=1");
+                        }
                     } else {
                         document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;
                     }

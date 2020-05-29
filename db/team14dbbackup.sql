@@ -25,9 +25,8 @@ DROP TABLE IF EXISTS `appointment`;
 CREATE TABLE `appointment` (
   `idappointment` int NOT NULL AUTO_INCREMENT,
   `description` longtext NOT NULL,
-  `status` enum('approved','denied') NOT NULL,
-  `time` datetime NOT NULL,
-  `durartion` enum('0.5','1','1.5','2') NOT NULL,
+  `status` enum('approved','denied','pending') NOT NULL DEFAULT 'pending',
+  `date` date NOT NULL,
   `user_iduser` varchar(45) NOT NULL,
   `officeHour_idofficeHour` int NOT NULL,
   PRIMARY KEY (`idappointment`),
@@ -56,7 +55,7 @@ DROP TABLE IF EXISTS `classroom`;
 /*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `classroom` (
   `idclassroom` varchar(64) NOT NULL,
-  `writeup` varchar(64) NOT NULL,
+  `writeup` TEXT,
   PRIMARY KEY (`idclassroom`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -138,14 +137,17 @@ DROP TABLE IF EXISTS `officeHour`;
 /*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `officeHour` (
   `idofficeHour` int NOT NULL AUTO_INCREMENT,
-  `in effect` tinyint NOT NULL,
-  `time_start` datetime NOT NULL,
-  `time_end` datetime NOT NULL,
-  `day_of_week` varchar(45) NOT NULL,
-  `tutorProfile_idtutorProfile` int NOT NULL,
+  `in effect` tinyint NOT NULL DEFAULT 1,
+  `time_start` time NOT NULL,
+  `time_end` time NOT NULL,
+  `day_of_week` tinyint NOT NULL,
+  `classroom_idclassroom` varchar(64) NOT NULL,
+  `user_iduser` varchar(45) NOT NULL,
   PRIMARY KEY (`idofficeHour`),
-  KEY `fk_officeHour_tutorProfile1_idx` (`tutorProfile_idtutorProfile`),
-  CONSTRAINT `fk_officeHour_tutorProfile1` FOREIGN KEY (`tutorProfile_idtutorProfile`) REFERENCES `tutorProfile` (`idtutorProfile`)
+  KEY `fk_officeHour_tutorProfile1_idx` (`user_iduser`),
+  KEY `fk_classroom_idclassroom_idx` (`classroom_idclassroom`),
+  CONSTRAINT `fk_officeHour_user_iduser` FOREIGN KEY (`user_iduser`) REFERENCES `user` (`iduser`),
+  CONSTRAINT `fk_officeHour_classroom_idclassroom` FOREIGN KEY (`classroom_idclassroom`) REFERENCES `classroom` (`idclassroom`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -171,7 +173,7 @@ CREATE TABLE `tickets` (
   `response` longtext NOT NULL,
   `time_posted` datetime NOT NULL,
   `time_resolved` datetime NOT NULL,
-  `feedback_style` enum('hands=on','visual','conceptual') NOT NULL,
+  `feedback_style` enum('hands on','visual','conceptual') NOT NULL,
   `status` enum('in progress','unresolved','resolved') NOT NULL,
   `textual_feedback` longtext NOT NULL,
   `tutorProfile_idtutorProfile` int NOT NULL,
@@ -204,8 +206,8 @@ DROP TABLE IF EXISTS `tutorProfile`;
 CREATE TABLE `tutorProfile` (
   `idtutorProfile` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `biography` longtext NOT NULL,
-  `style` enum('hands-on','visual','conceptual') NOT NULL,
+  `biography` longtext,
+  `style` enum('hands-on','visual','conceptual'),
   `classroom_idclassroom` varchar(64) NOT NULL,
   PRIMARY KEY (`idtutorProfile`),
   KEY `fk_tutorProfile_classroom1_idx` (`classroom_idclassroom`),
@@ -232,8 +234,6 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `iduser` varchar(45) NOT NULL,
   `user_type` enum('student','staff') NOT NULL,
-  `available_hours` json NOT NULL,
-  `notification_setting` json NOT NULL,
   `classroom_idclassroom` varchar(64) NOT NULL,
   PRIMARY KEY (`iduser`,`classroom_idclassroom`),
   KEY `fk_user_classroom1_idx` (`classroom_idclassroom`),
@@ -260,3 +260,7 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2020-05-18 17:47:30
+CREATE USER IF NOT EXISTS `client`;
+GRANT SELECT,INSERT,UPDATE ON * TO `client`;
+
+CREATE VIEW availabeOfficeHour AS SELECT * FROM officeHour WHERE `in effect`=1 AND idofficeHour NOT IN (SELECT idappointment  FROM appointment WHERE date>=CURDATE() AND status != 'denied');

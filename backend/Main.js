@@ -67,7 +67,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/fetchAppointments', function (req, res) {
-    const sql = "SELECT Appointment;";
+    const sql = "SELECT JSON_ARRAYAGG('id', id, 'title', title, 'start', start, 'end', end, 'available', available) FROM contact;";
     const result = con.query(sql);
     return JSON.stringify(result);
 });

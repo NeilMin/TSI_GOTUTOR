@@ -50,7 +50,7 @@ sio.use(function (socket, next) {
 sio.on("connection", function (socket) {
     socket.on("reserve", (data) => {
         console.log(data);
-        console.log("from" + socket.request.session.uid);
+        console.log("from " + socket.request.session.uid);
         socket.broadcast.emit('new', data.id);
     })
 });
@@ -67,17 +67,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/fetchAppointments', function (req, res) {
-    con.connect(function (err) {
-        if (err) throw err;
-        console.log("MySQL connected");
-    });
-
-    const sql = 'SELECT Appointments FROM Classroom';
-    const result = con.query(sql, function (err, result, fields) {
-        if (err) throw err;
-        console.log(result);
-    });
-
+    const sql = "SELECT Appointments FROM Classroom;";
     return con.query(sql);
 });
 
@@ -103,4 +93,16 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");
+});
+
+
+con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+
+    let sql = "CREATE DATABASE GoTutor;";
+    con.query(sql);
+
+    sql = "use GoTutor;";
+    con.query(sql);
 });

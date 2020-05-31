@@ -37,11 +37,9 @@ class ThreadContainer extends React.Component{
         ReactDOM.render(<ThreadContainer threads={data}/>,threadList);
     })
     
-    document.addEventListener("DOMContentLoaded",function(){
         var form=document.getElementById("new-thread")
         form.addEventListener('submit',function (event) {
             event.preventDefault();
             socket.emit('newThread',{title:form.title.value,body:form.body.value})
         })
     })
-})

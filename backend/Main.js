@@ -67,22 +67,13 @@ app.use(function (req, res, next) {
 });
 
 app.get('/fetchAppointments', function (req, res) {
-    res.json([{
-            id: 1,
-            title: "tutor",
-            start: "2020-05-30T10:45:00",
-            end: "2020-05-30T12:45:00",
-            available: "yes"
-        },
-            {
-                id: 2,
-                title: "tutor",
-                start: "2020-05-28T10:45:00",
-                end: "2020-05-28T12:45:00",
-                available: "yes",
-            }
-        ]
-    )
+    const sql = "SELECT * FROM Appointments";
+    const result = con.query(sql, function (err, result, fields) {
+        if (err) throw err;
+        console.log(result);
+    });
+
+    return result;
 });
 
 app.post('/googleAuth', login);
@@ -109,7 +100,7 @@ httpServer.listen(80, function () {
     console.log("Listening on port 80");
 });
 
-con.connect(function(err) {
+con.connect(function (err) {
     if (err) throw err;
     console.log("Connected!");
 });

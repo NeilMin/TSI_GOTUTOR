@@ -10,8 +10,15 @@ const app = express();
 const http = require('http');
 const httpServer = http.createServer(app);
 
+// MySQL
+const mysql = require('mysql');
+
 // Multer
 const multer = require('multer');
+
+//SIO
+const sio = require("socket.io")(httpServer);
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads')
@@ -20,6 +27,7 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + req.session.uid + '.pdf')
     }
 });
+
 const upload = multer({storage: storage});
 
 const cookieSessionMiddleware = cookieSession({
@@ -27,7 +35,12 @@ const cookieSessionMiddleware = cookieSession({
     secret: 'devel'
 });
 
-const sio = require("socket.io")(httpServer);
+
+const con = mysql.createConnection({
+    host: "localhost",
+    user: "team14dbUser",
+    password: "team14TSIdb@user"
+});
 
 sio.use(function (socket, next) {
     //console.log(socket.request);
@@ -94,4 +107,9 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");
+});
+
+con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
 });

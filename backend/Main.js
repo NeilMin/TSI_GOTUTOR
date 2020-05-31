@@ -67,6 +67,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/fetchAppointments', function (req, res) {
+
 });
 
 app.post('/googleAuth', login);
@@ -89,7 +90,7 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
     res.send(file);
 });
 
-app.get('/postThread', (req, res, next) => {
+app.get('/postThread', function (req, res) {
     console.log("Forum thread made!");
 });
 

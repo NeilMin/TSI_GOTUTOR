@@ -74,7 +74,7 @@ app.post('/googleAuth', login);
 
 app.get('/testUser', function (req, res) {
     req.session.uid = 'test';
-    res.redirect("/appointment.html")
+    res.redirect("/appointment.html");
 });
 
 
@@ -91,8 +91,8 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
 });
 
 app.post('/postThread', (req, res, next) => {
-    const threadTitle = req.params.title;
-    const threadBody = req.params.body;
+    const threadTitle = req.query.title;
+    const threadBody = req.query.body;
 
     if (!threadTitle || !threadBody) {
         const error = new Error('Please complete forum post');
@@ -103,8 +103,7 @@ app.post('/postThread', (req, res, next) => {
     console.log(threadTitle);
     console.log(threadBody);
 
-
-    res.json('Success!');
+    res.redirect("/forum.html");
 });
 
 httpServer.listen(80, function () {

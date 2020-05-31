@@ -89,7 +89,7 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
     res.send(file);
 });
 
-app.post('/postThread', (req, res, next) => {
+app.get('/postThread', (req, res, next) => {
     console.log("Forum thread made!");
 });
 

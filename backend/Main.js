@@ -90,18 +90,15 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
     res.send(file);
 });
 
-app.post('/postThread', (req, res, next) => {
-    const threadTitle = req.query.title;
-    const threadBody = req.query.body;
+app.post('/postThread', upload.single('title'), upload.single('body'), (req, res, next) => {
+    const threadTitle = req.title;
+    const threadBody = req.body;
 
     if (!threadTitle || !threadBody) {
         const error = new Error('Please complete forum post');
         error.httpStatusCode = 400;
         return next(error)
     }
-
-    console.log(threadTitle);
-    console.log(threadBody);
 
     res.redirect("/forum.html");
 });

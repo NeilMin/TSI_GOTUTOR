@@ -93,6 +93,10 @@ app.post('/postThread', (req, res, next) => {
     console.log("Forum thread made!");
 });
 
+httpServer.listen(80, function () {
+    console.log("Listening on port 80");
+});
+
 con.connect(function (err) {
     const sql = "use team14db;";
     con.query(sql);

@@ -26,7 +26,7 @@ const model=require('./model');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads');
+        cb(null, 'GOTUTOR_UI/uploads');
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '.pdf');

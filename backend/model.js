@@ -1,7 +1,7 @@
 //Connect to database
 const DB_NAME = "CSE110"
 const mysqlx = require('@mysql/xdevapi');
-const session = mysqlx.getSession({ user: "client", socket: "/var/run/mysqld/mysqlx.sock", schema: DB_NAME });
+const session = mysqlx.getSession({ user: "team14dbUser", password:"team14TSIdb@user", socket: "/var/run/mysqld/mysqlx.sock", schema: DB_NAME });
 const db = session.then(s => { return s.getSchema(DB_NAME) });
 
 module.exports.createClassroom = function (classroomId) {

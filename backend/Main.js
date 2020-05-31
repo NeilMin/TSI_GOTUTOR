@@ -26,10 +26,10 @@ const model=require('./model');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads');
+        cb(null, 'GOTUTOR_UI/uploads');
     },
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + req.session.uid + '.pdf');
+        cb(null, file.fieldname + '.pdf');
     }
 });
 
@@ -67,11 +67,11 @@ sio.of('/forumThread').on('connection',function (socket) {
         data.userId=socket.request.session.uid;
         model.createForumThread(data.title,data.body,data.userId,DUMMY_CLASSROOM).then(r=>{
             data.id=r.getAutoIncrementValue();
-            sio.of('/forumThread').emit("otherThread",data)
+            sio.of('/forumThread').emit("otherThread",data);
             console.log(data);
         });
     })
-})
+});
 
 sio.of('/forumReply').on('connection',function (socket) {
     socket.on('fetch',(s,fn)=>{
@@ -80,7 +80,7 @@ sio.of('/forumReply').on('connection',function (socket) {
             console.log(r);
             fn(r)
         });
-    })
+    });
     socket.on('newReply',(s)=>{
         s.userId=socket.request.session.uid;
         console.log(s);
@@ -90,7 +90,7 @@ sio.of('/forumReply').on('connection',function (socket) {
             sio.of('/forumReply').to(String(s.threadId)).emit('otherReply',s)
         })
     })
-})
+});
 
 app.use('/', express.static('GOTUTOR_UI'));
 
@@ -98,7 +98,7 @@ app.use(cookieSessionMiddleware);
 
 app.use(function (req, res, next) {
     console.log(req.path + " requested");
-    console.log("user id is:" + req.session.uid);
+    console.log("user id is: " + req.session.uid);
     next();
 });
 
@@ -123,7 +123,7 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
         return next(error)
     }
 
-    res.send(file);
+    res.redirect("writeup.html");
 });
 
 app.post('/postThread', upload.single('title'), upload.single('body'), (req, res, next) => {
@@ -136,6 +136,8 @@ app.post('/postThread', upload.single('title'), upload.single('body'), (req, res
         return next(error)
     }
 
+    console.log(threadTitle);
+    console.log(threadBody);
     res.redirect("/forum.html");
 });
 

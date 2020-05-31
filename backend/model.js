@@ -68,8 +68,9 @@ function filter(query,classroom,userId,base) {
     whereStr+=" AND user_iduser=:uid"
   }
   if (whereStr.startsWith(" AND")){
-    whereStr=whereStr.substring(4);
+    whereStr=whereStr.substring(4).trim();
   }
+  console.log(whereStr);
   query=query.where(whereStr)
   if (classroom) {
     query=query.bind('cid',classroom);
@@ -149,7 +150,7 @@ module.exports.readAppointmentByStudentId=function (classroom,user,role) {
 }
 
 module.exports.createForumThread=function (title,paragraph,userId,classroomId) {
-  db.then(db=>{db.getTable('forumThread').insert('title','paragraph','user_iduser','classroom_idclassroom').values(title,paragraph,userId,classroomId).execute()})
+  return db.then(db=>(db.getTable('forumThread').insert('title','paragraph','user_iduser','classroom_idclassroom').values(title,paragraph,userId,classroomId).execute()))
 }
 
 module.exports.updateForumThread=function (title,paragraph,userId,classroomId) {
@@ -163,9 +164,9 @@ module.exports.readForumThread=function(classroom, userId) {
   }).then(r => (
     r.fetchAll().map(x => ({
       title: x[0],
-      paragraph: x[1],
+      body: x[1],
       userId: x[2],
-      id: x[4]
+      id: x[3]
     }))
   )
   )
@@ -179,8 +180,13 @@ module.exports.createForumReply=function (reply,thread,user) {
   return db.then(db=>(db.getTable('forumReply').insert('reply','forumThread_idforumThread','user_iduser').values(reply,thread,user).execute()));
 }
 
-module.exports.createForumReply=function (reply,thread,user) {
-  return db.then(db=>(db.getTable('forumReply').insert('reply','forumThread_idforumThread','user_iduser').values(reply,thread,user).execute()));
+
+module.exports.readForumRepliesByThreadId=function (tid) {
+  return db.then(db=>(db.getTable('forumReply').select('idforumReply','reply','user_iduser').where('forumThread_idforumThread=:tid').bind('tid',tid).execute())).then(r=>(r.fetchAll().map(x=>({
+    id:x[0],
+    reply:x[1],
+    userId:x[2]
+  }))))
 }
 
 module.exports.createTicket=function (description,time_posted,studentId,classroom) {

@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "node backend/main",
-    "build": "npx babel JSX --out-dir old_site  --presets react-app/prod",
+    "build": "npx babel JSX --out-dir GOTUTOR_UI  --presets react-app/prod",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

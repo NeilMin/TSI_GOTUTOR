@@ -67,13 +67,18 @@ app.use(function (req, res, next) {
 });
 
 app.get('/fetchAppointments', function (req, res) {
-    const sql = "SELECT * FROM Appointments";
+    con.connect(function (err) {
+        if (err) throw err;
+        console.log("MySQL connected");
+    });
+
+    const sql = 'SELECT Appointments FROM Classroom';
     const result = con.query(sql, function (err, result, fields) {
         if (err) throw err;
         console.log(result);
     });
 
-    return result;
+    return con.query(sql);
 });
 
 app.post('/googleAuth', login);
@@ -98,9 +103,4 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");
-});
-
-con.connect(function (err) {
-    if (err) throw err;
-    console.log("Connected!");
 });

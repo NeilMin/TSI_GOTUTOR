@@ -63,7 +63,12 @@ sio.of('/forumThread').on('connection',function (socket) {
         x=>{console.log(JSON.stringify(x));socket.emit("oldThread",x)}
     );
     socket.on("newThread",(data)=>{
-        model.createForumThread(data.title,data.body,socket.request.session.uid,DUMMY_CLASSROOM);
+        data.userId=socket.request.session.uid;
+        model.createForumThread(data.title,data.body,data.userId,DUMMY_CLASSROOM).then(r=>{
+            data.id=r.getAutoIncrementValue();
+            sio.of('/forumThread').emit("otherThread",data)
+            console.log(data);
+        });
     })
 })
 

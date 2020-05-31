@@ -1,6 +1,7 @@
 //import React from 'react';
 document.addEventListener("DOMContentLoaded",function(){
-class Thread extends React.Component{
+    
+    class Thread extends React.Component{
     constructor(props){
         props.key=props.content.id;
         super(props);
@@ -18,8 +19,11 @@ class ThreadContainer extends React.Component{
         super(props);
         this.state={threads:props.threads};
     }
-    addThread(threadContent){
+    addThread(threadContent){;
         this.state.threads.unshift(threadContent);
+        this.setState({
+            threads:this.state.threads
+        });
     }
     
     render(){
@@ -34,12 +38,12 @@ class ThreadContainer extends React.Component{
     var threadList=document.getElementById('threads')
     socket.on("oldThread",function(data){
         console.log(data)
-        ReactDOM.render(<ThreadContainer threads={data}/>,threadList);
-    })
-    
+        var container=ReactDOM.render(<ThreadContainer threads={data}/>,threadList);
         var form=document.getElementById("new-thread")
         form.addEventListener('submit',function (event) {
             event.preventDefault();
             socket.emit('newThread',{title:form.title.value,body:form.body.value})
         })
+        socket.on("otherThread",data=>container.addThread(data))
     })
+})

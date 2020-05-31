@@ -150,7 +150,7 @@ module.exports.readAppointmentByStudentId=function (classroom,user,role) {
 }
 
 module.exports.createForumThread=function (title,paragraph,userId,classroomId) {
-  db.then(db=>{db.getTable('forumThread').insert('title','paragraph','user_iduser','classroom_idclassroom').values(title,paragraph,userId,classroomId).execute()})
+  return db.then(db=>(db.getTable('forumThread').insert('title','paragraph','user_iduser','classroom_idclassroom').values(title,paragraph,userId,classroomId).execute()))
 }
 
 module.exports.updateForumThread=function (title,paragraph,userId,classroomId) {

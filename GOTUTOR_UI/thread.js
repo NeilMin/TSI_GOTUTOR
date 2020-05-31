@@ -62,7 +62,11 @@ document.addEventListener("DOMContentLoaded", function () {
         _createClass(ThreadContainer, [{
             key: "addThread",
             value: function addThread(threadContent) {
+                ;
                 this.state.threads.unshift(threadContent);
+                this.setState({
+                    threads: this.state.threads
+                });
             }
         }, {
             key: "render",
@@ -84,12 +88,14 @@ document.addEventListener("DOMContentLoaded", function () {
     var threadList = document.getElementById('threads');
     socket.on("oldThread", function (data) {
         console.log(data);
-        ReactDOM.render(React.createElement(ThreadContainer, { threads: data }), threadList);
-    });
-
-    var form = document.getElementById("new-thread");
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        socket.emit('newThread', { title: form.title.value, body: form.body.value });
+        var container = ReactDOM.render(React.createElement(ThreadContainer, { threads: data }), threadList);
+        var form = document.getElementById("new-thread");
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            socket.emit('newThread', { title: form.title.value, body: form.body.value });
+        });
+        socket.on("otherThread", function (data) {
+            return container.addThread(data);
+        });
     });
 });

@@ -98,11 +98,7 @@ httpServer.listen(80, function () {
 
 con.connect(function (err) {
     if (err) throw err;
-    console.log("Connected!");
-
-    let sql = "CREATE DATABASE GoTutor;";
+    const sql = "use GoTutor;";
     con.query(sql);
-
-    sql = "use GoTutor;";
-    con.query(sql);
+    console.log("Connected to GoTutor DB!!");
 });

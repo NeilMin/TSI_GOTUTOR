@@ -67,8 +67,9 @@ app.use(function (req, res, next) {
 });
 
 app.get('/fetchAppointments', function (req, res) {
-    const sql = "SELECT Appointments FROM Classroom;";
-    return con.query(sql);
+    const sql = "SELECT Appointment;";
+    const result = con.query(sql);
+    return JSON.stringify(result);
 });
 
 app.post('/googleAuth', login);

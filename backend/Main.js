@@ -91,15 +91,15 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
 });
 
 app.post('/postThread', (req, res, next) => {
-    const threadTitle = req.thread;
-    const threadBody = req.body;
+    const threadTitle = req.params.title;
+    const threadBody = req.params.body;
 
     if (!threadTitle || !threadBody) {
         const error = new Error('Please complete forum post');
         error.httpStatusCode = 400;
         return next(error)
     }
-    
+
     console.log(threadTitle);
     console.log(threadBody);
 

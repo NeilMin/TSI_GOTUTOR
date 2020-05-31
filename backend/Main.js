@@ -123,7 +123,7 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
         return next(error)
     }
 
-    res.send(file);
+    res.redirect("writeup.html");
 });
 
 app.post('/postThread', upload.single('title'), upload.single('body'), (req, res, next) => {

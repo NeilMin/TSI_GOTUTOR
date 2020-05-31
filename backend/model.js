@@ -68,8 +68,9 @@ function filter(query,classroom,userId,base) {
     whereStr+=" AND user_iduser=:uid"
   }
   if (whereStr.startsWith(" AND")){
-    whereStr=whereStr.substring(4);
+    whereStr=whereStr.substring(4).trim();
   }
+  console.log(whereStr);
   query=query.where(whereStr)
   if (classroom) {
     query=query.bind('cid',classroom);
@@ -163,9 +164,9 @@ module.exports.readForumThread=function(classroom, userId) {
   }).then(r => (
     r.fetchAll().map(x => ({
       title: x[0],
-      paragraph: x[1],
+      body: x[1],
       userId: x[2],
-      id: x[4]
+      id: x[3]
     }))
   )
   )

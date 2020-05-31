@@ -7,3 +7,4 @@ db.createOfficeHour('b','a',"10:00","10:00",1);
 db.readEffectiveOfficeHour("a",null)
 db.createAppointment("j","2020-01-01",'b',1)
 db.createAppointment("j","2020-07-01",'b',3)
+

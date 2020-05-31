@@ -1,5 +1,5 @@
 const login = require('./Login.js');
-
+const DUMMY_CLASSROOM="a";
 // Cookie
 const cookieSession = require('cookie-session');
 
@@ -12,13 +12,16 @@ const http = require('http');
 const httpServer = http.createServer(app);
 
 // MySQL
-const mysql = require('mysql');
+//const mysql = require('mysql');
 
 // Multer
 const multer = require('multer');
 
 // SIO
 const sio = require("socket.io")(httpServer);
+
+//Database
+const model=require('./model');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -35,13 +38,13 @@ const cookieSessionMiddleware = cookieSession({
     name: 's',
     secret: 'devel'
 });
-
+/*
 const con = mysql.createConnection({
     host: "localhost",
     user: "team14dbUser",
     password: "team14TSIdb@user"
 });
-
+*/
 sio.use(function (socket, next) {
     //console.log(socket.request);
     cookieSessionMiddleware(socket.request, socket.request.res || {}, next);
@@ -55,6 +58,14 @@ sio.on("connection", function (socket) {
     })
 });
 
+sio.of('/forumThread').on('connection',function (socket) {
+    model.readForumThread(DUMMY_CLASSROOM,null).then(
+        x=>{console.log(JSON.stringify(x));socket.emit("oldThread",x)}
+    );
+    socket.on("newThread",(data)=>{
+        model.createForumThread(data.title,data.body,socket.request.session.uid,DUMMY_CLASSROOM);
+    })
+})
 
 app.use('/', express.static('GOTUTOR_UI'));
 
@@ -73,8 +84,8 @@ app.get('/fetchAppointments', function (req, res) {
 app.post('/googleAuth', login);
 
 app.get('/testUser', function (req, res) {
-    req.session.uid = 'test';
-    res.redirect("/appointment.html");
+    req.session.uid = req.query.user;
+    res.redirect("/forum.html");
 });
 
 
@@ -106,8 +117,9 @@ app.post('/postThread', upload.single('title'), upload.single('body'), (req, res
 httpServer.listen(80, function () {
     console.log("Listening on port 80");
 });
-
+/*
 con.connect(function (err) {
     const sql = "use team14db;";
     con.query(sql);
 });
+*/

@@ -10,15 +10,8 @@ const app = express();
 const http = require('http');
 const httpServer = http.createServer(app);
 
-// MySQL
-const mysql = require('mysql');
-
 // Multer
 const multer = require('multer');
-
-//SIO
-const sio = require("socket.io")(httpServer);
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads')
@@ -27,7 +20,6 @@ const storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + req.session.uid + '.pdf')
     }
 });
-
 const upload = multer({storage: storage});
 
 const cookieSessionMiddleware = cookieSession({
@@ -35,12 +27,7 @@ const cookieSessionMiddleware = cookieSession({
     secret: 'devel'
 });
 
-
-const con = mysql.createConnection({
-    host: "localhost",
-    user: "team14dbUser",
-    password: "team14TSIdb@user"
-});
+const sio = require("socket.io")(httpServer);
 
 sio.use(function (socket, next) {
     //console.log(socket.request);
@@ -67,9 +54,22 @@ app.use(function (req, res, next) {
 });
 
 app.get('/fetchAppointments', function (req, res) {
-    const sql = "SELECT JSON_ARRAYAGG(JSON_OBJECT('id', id, 'title', title, 'start', start, 'end', end, 'available', available)) FROM Appointment;";
-    const result = con.query(sql);
-    return JSON.stringify(result);
+    res.json([{
+            id: 1,
+            title: "tutor",
+            start: "2020-05-30T10:45:00",
+            end: "2020-05-30T12:45:00",
+            available: "yes"
+        },
+            {
+                id: 2,
+                title: "tutor",
+                start: "2020-05-28T10:45:00",
+                end: "2020-05-28T12:45:00",
+                available: "yes",
+            }
+        ]
+    )
 });
 
 app.post('/googleAuth', login);
@@ -94,12 +94,4 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");
-});
-
-
-con.connect(function (err) {
-    if (err) throw err;
-    const sql = "use GoTutor;";
-    con.query(sql);
-    console.log("Connected to GoTutor DB!!");
 });

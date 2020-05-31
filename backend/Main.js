@@ -1,3 +1,4 @@
+//process.env.DEBUG="*";
 const login = require('./Login.js');
 const DUMMY_CLASSROOM="a";
 // Cookie
@@ -69,6 +70,25 @@ sio.of('/forumThread').on('connection',function (socket) {
             sio.of('/forumThread').emit("otherThread",data)
             console.log(data);
         });
+    })
+})
+
+sio.of('/forumReply').on('connection',function (socket) {
+    socket.on('fetch',(s,fn)=>{
+        socket.join(String(s));
+        model.readForumRepliesByThreadId(s).then(r=>{
+            console.log(r);
+            fn(r)
+        });
+    })
+    socket.on('newReply',(s)=>{
+        s.userId=socket.request.session.uid;
+        console.log(s);
+        model.createForumReply(s.reply,s.threadId,s.userId).then(r=>{
+            s.id=r.getAutoIncrementValue();
+            console.log(s);
+            sio.of('/forumReply').to(String(s.threadId)).emit('otherReply',s)
+        })
     })
 })
 

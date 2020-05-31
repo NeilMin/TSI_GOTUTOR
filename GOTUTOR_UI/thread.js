@@ -8,38 +8,153 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 //import React from 'react';
 document.addEventListener("DOMContentLoaded", function () {
-    var Thread = function (_React$Component) {
-        _inherits(Thread, _React$Component);
+    var replySocket = io.connect("http://gotutor.com:8080/forumReply");
+
+    var Reply = function (_React$Component) {
+        _inherits(Reply, _React$Component);
+
+        function Reply() {
+            _classCallCheck(this, Reply);
+
+            return _possibleConstructorReturn(this, (Reply.__proto__ || Object.getPrototypeOf(Reply)).apply(this, arguments));
+        }
+
+        _createClass(Reply, [{
+            key: "render",
+            value: function render() {
+                return React.createElement(
+                    "div",
+                    { className: "reply" },
+                    React.createElement(
+                        "p",
+                        null,
+                        this.props.reply
+                    ),
+                    React.createElement(
+                        "p",
+                        null,
+                        "By ",
+                        this.props.userId
+                    )
+                );
+            }
+        }]);
+
+        return Reply;
+    }(React.Component);
+
+    var ThreadRepliesContainer = function (_React$Component2) {
+        _inherits(ThreadRepliesContainer, _React$Component2);
+
+        function ThreadRepliesContainer(props) {
+            _classCallCheck(this, ThreadRepliesContainer);
+
+            var _this2 = _possibleConstructorReturn(this, (ThreadRepliesContainer.__proto__ || Object.getPrototypeOf(ThreadRepliesContainer)).call(this, props));
+
+            _this2.repliesInit = _this2.repliesInit.bind(_this2);
+            _this2.state = { replies: [], newReplyVal: "" };
+            _this2.handleReplyInputChange = _this2.handleReplyInputChange.bind(_this2);
+            _this2.handleReplyInput = _this2.handleReplyInput.bind(_this2);
+            _this2.handleOtherReply = _this2.handleOtherReply.bind(_this2);
+            replySocket.emit('fetch', props.threadId, _this2.repliesInit);
+            replySocket.on("otherReply", _this2.handleOtherReply);
+            return _this2;
+        }
+
+        _createClass(ThreadRepliesContainer, [{
+            key: "repliesInit",
+            value: function repliesInit(res) {
+                this.setState({ replies: res });
+            }
+        }, {
+            key: "handleOtherReply",
+            value: function handleOtherReply(res) {
+                this.state.replies.unshift(res);
+                this.setState({ replies: this.state.replies });
+            }
+        }, {
+            key: "handleReplyInputChange",
+            value: function handleReplyInputChange(event) {
+                this.setState({ newReplyVal: event.target.value });
+            }
+        }, {
+            key: "handleReplyInput",
+            value: function handleReplyInput(event) {
+                event.preventDefault();
+                replySocket.emit('newReply', { threadId: this.props.threadId, reply: this.state.newReplyVal });
+            }
+        }, {
+            key: "render",
+            value: function render() {
+                return React.createElement(
+                    "div",
+                    null,
+                    this.state.replies.map(function (x) {
+                        return React.createElement(Reply, { key: x.id, reply: x.reply, userId: x.userId });
+                    }),
+                    React.createElement(
+                        "form",
+                        { className: "newReply", onSubmit: this.handleReplyInput },
+                        React.createElement(
+                            "label",
+                            null,
+                            "New Reply"
+                        ),
+                        React.createElement("input", { type: "text", value: this.state.newReplyVal, onChange: this.handleReplyInputChange }),
+                        React.createElement("input", { type: "submit", value: "Post reply." })
+                    )
+                );
+            }
+        }]);
+
+        return ThreadRepliesContainer;
+    }(React.Component);
+
+    var Thread = function (_React$Component3) {
+        _inherits(Thread, _React$Component3);
 
         function Thread(props) {
             _classCallCheck(this, Thread);
 
-            props.key = props.content.id;
-            return _possibleConstructorReturn(this, (Thread.__proto__ || Object.getPrototypeOf(Thread)).call(this, props));
+            var _this3 = _possibleConstructorReturn(this, (Thread.__proto__ || Object.getPrototypeOf(Thread)).call(this, props));
+
+            _this3.state = { expanded: false };
+            _this3.toggleExpand = _this3.toggleExpand.bind(_this3);
+            return _this3;
         }
 
         _createClass(Thread, [{
+            key: "toggleExpand",
+            value: function toggleExpand() {
+                this.setState({ expanded: !this.state.expanded });
+            }
+        }, {
             key: "render",
             value: function render() {
                 return React.createElement(
                     "div",
                     null,
                     React.createElement(
-                        "h4",
-                        null,
-                        this.props.content.title
+                        "div",
+                        { className: "threadMain", onClick: this.toggleExpand },
+                        React.createElement(
+                            "h4",
+                            null,
+                            this.props.content.title
+                        ),
+                        React.createElement(
+                            "p",
+                            null,
+                            this.props.content.body
+                        ),
+                        React.createElement(
+                            "p",
+                            null,
+                            "posted by ",
+                            this.props.content.userId
+                        )
                     ),
-                    React.createElement(
-                        "p",
-                        null,
-                        this.props.content.body
-                    ),
-                    React.createElement(
-                        "p",
-                        null,
-                        "posted by ",
-                        this.props.content.userId
-                    )
+                    this.state.expanded ? React.createElement(ThreadRepliesContainer, { threadId: this.props.content.id }) : React.createElement("div", null)
                 );
             }
         }]);
@@ -47,16 +162,16 @@ document.addEventListener("DOMContentLoaded", function () {
         return Thread;
     }(React.Component);
 
-    var ThreadContainer = function (_React$Component2) {
-        _inherits(ThreadContainer, _React$Component2);
+    var ThreadContainer = function (_React$Component4) {
+        _inherits(ThreadContainer, _React$Component4);
 
         function ThreadContainer(props) {
             _classCallCheck(this, ThreadContainer);
 
-            var _this2 = _possibleConstructorReturn(this, (ThreadContainer.__proto__ || Object.getPrototypeOf(ThreadContainer)).call(this, props));
+            var _this4 = _possibleConstructorReturn(this, (ThreadContainer.__proto__ || Object.getPrototypeOf(ThreadContainer)).call(this, props));
 
-            _this2.state = { threads: props.threads };
-            return _this2;
+            _this4.state = { threads: props.threads };
+            return _this4;
         }
 
         _createClass(ThreadContainer, [{

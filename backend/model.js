@@ -180,8 +180,13 @@ module.exports.createForumReply=function (reply,thread,user) {
   return db.then(db=>(db.getTable('forumReply').insert('reply','forumThread_idforumThread','user_iduser').values(reply,thread,user).execute()));
 }
 
-module.exports.createForumReply=function (reply,thread,user) {
-  return db.then(db=>(db.getTable('forumReply').insert('reply','forumThread_idforumThread','user_iduser').values(reply,thread,user).execute()));
+
+module.exports.readForumRepliesByThreadId=function (tid) {
+  return db.then(db=>(db.getTable('forumReply').select('idforumReply','reply','user_iduser').where('forumThread_idforumThread=:tid').bind('tid',tid).execute())).then(r=>(r.fetchAll().map(x=>({
+    id:x[0],
+    reply:x[1],
+    userId:x[2]
+  }))))
 }
 
 module.exports.createTicket=function (description,time_posted,studentId,classroom) {

@@ -10,27 +10,11 @@
     <div class="container">
         <nav>
             <img src="images/GoTutor.png" alt="logo" class="logo">
-            <ul class="classrooms">
-                <li>
-                    <a href="#ClassroomID=1">CSE 140</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=2">CSE 101</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=3">CSE 130</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=4">CSE 110</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=5">CSE 140L</a>
-                </li>
-            </ul>
+            <!--TODO: Classroom navigation-->
             <ul class="navigation">
                 <li style="color: #F3E500;">Assignment</li>
                 <li><a href="classroom.html">Classroom</a></li>
-                <li><a href="appointment.html">Appointments</a></li>
+                <li style="color: #F3E500;">Appointments</li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="ticket.html">Tickets</a></li>
@@ -40,45 +24,13 @@
             </ul>
         </nav>
         <div class="content">
+            <!--TODO: Break apart between tutor and student-->
+            <h1>Current assignment:</h1><br>
+            <iframe src="../uploads/writeup.pdf" style="width: 100%;height: 100%;border: none;"></iframe><br>
             <form action="/uploadfile" enctype="multipart/form-data" method="POST">
                 <input type="file" name="writeup"/>
                 <input type="submit" value="Upload a file"/>
             </form>
-            <div class="both">
-                Section for both:
-                <br/>
-                <p id="writeupText">
-                    Current writeups will be viewable here, a PDF file could be displayed here.
-                </p>
-                <button id="view">View writeup in pdf</button>
-                <button id="download">Download write up</button>
-            </div>
-            <br/>
-            <div class="student">
-                Section for student:
-                <form>
-                    Form to submit a ticket to the queue:
-                    <br/>
-                    <label>
-                        Description of problem:
-                        <input/>
-                    </label>
-                    <br/>
-                    <label>
-                        What have you done attempting to fix the problem:
-                        <input/>
-                    </label>
-                </form>
-                <button id="reference">Select reference</button>
-                <button id="createTicket">Create ticket</button>
-            </div>
-            <br/>
-            <div class="tutor">
-                Section for tutor:
-                <button id="upload">Upload new writeup</button>
-                <br/>
-                <button id="upload">Remove current writeup</button>
-            </div>
         </div>
     </div>
 </div>

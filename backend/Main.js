@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads');
     },
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + req.session.uid + '.pdf');
+        cb(null, file.fieldname + '.pdf');
     }
 });
 

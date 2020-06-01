@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         
         render() {
-            return (<div>
+            return (<div id={"wholeThread"}>
                 {this.state.replies.map(x=>(<Reply key={x.id} reply={x.reply} userId={x.userId}></Reply>))}
                 <form className="newReply" onSubmit={this.handleReplyInput}>
                     <label>New Reply</label>

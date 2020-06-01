@@ -1,6 +1,6 @@
 //import React from 'react';
 document.addEventListener("DOMContentLoaded", function () {
-    var replySocket = io.connect("http://gotutor.com:8080/forumReply");
+    var replySocket = io.connect("http://gotutor.com/forumReply");
     class Reply extends React.Component {
         render() {
             return (<div className="reply">
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    var socket = io.connect("http://gotutor.com:8080/forumThread");
+    var socket = io.connect("http://gotutor.com/forumThread");
     var threadList = document.getElementById('threads');
     socket.on("oldThread", function (data) {
         console.log(data);

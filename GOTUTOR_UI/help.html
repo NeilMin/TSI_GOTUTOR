@@ -3,6 +3,25 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
+    <script>
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                document.cookie = "";
+                window.location.replace("login.html")
+            });
+        }
+
+        gapi.load('auth2', function () {
+            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
+                if (!auth2.isSignedIn.get()) {
+                    window.location.replace("login.html")
+                }
+            });
+
+        });
+    </script>
 </head>
 
 <body>
@@ -10,55 +29,37 @@
     <div class="container">
         <nav>
             <img src="images/GoTutor.png" alt="logo" class="logo">
-            <ul class="classrooms">
-                <li>
-                    <a href="#ClassroomID=1">CSE 140</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=2">CSE 101</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=3">CSE 130</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=4">CSE 110</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=5">CSE 140L</a>
-                </li>
-            </ul>
+            <!--TODO: Classroom navigation-->
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
                 <li><a href="classroom.html">Classroom</a></li>
-                <li><a href="appointment.html">Appointments</a></li>
+                <li><a href="#">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="ticket.html">Tickets</a></li>
                 <li><a href="setting.html">Settings</a></li>
                 <li style="color: #F3E500;">Help</li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
         <div class="content">
             <div class="both">
-                <ul id="commonQA">
-                    <li>Question
-                        <br/>
-                        Answer
-                    </li>
-                    <li>Question
-                        <br/>
-                        Answer
-                    </li>
-                    <li>Question
-                        <br/>
-                        Answer
-                    </li>
-                    <li>Question
-                        <br/>
-                        Answer
-                    </li>
-                </ul>
+                <h1>How do I ask a question a to the classroom?</h1>
+                <p>Simply navigate to the forum section. Then, you can create a thread by completing the topmost
+                    dialogue. The forum is live, so you can be assured you are always seeing the latest posts on the
+                    forum.</p>
+
+                <h1>How do I upload a write-up or an assignment as a tutor?</h1>
+                <p>Navigate to the assignment section and upload a PDF by completing the dialogue. The PDF will be
+                    displayed for your students to see.</p>
+
+                <h1>I want to view or configure the classroom's office hours.</h1>
+                <p>This is possible via the classroom section. Tutors can add or remove office hours. Anyone enrolled in
+                    the classroom can view this.</p>
+
+                <h1>How do I reserve an appointment?</h1>
+                <p>Simply view the appointment calendar under the appointments section. Click on any open space to
+                    reserve that spot.</p>
             </div>
         </div>
     </div>

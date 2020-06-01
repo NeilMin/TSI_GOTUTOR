@@ -14,7 +14,27 @@
 
     <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <script>
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                document.cookie = "";
+                window.location.replace("login.html")
+            });
+        }
+
+        gapi.load('auth2', function () {
+            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
+                if (!auth2.isSignedIn.get()) {
+                    window.location.replace("login.html")
+                }
+            });
+
+        });
+    </script>
 </head>
+
 
 <script>
     //TODO: Configure calendar in such a way: Add office hour, remove by clicking on it and pressing remove button
@@ -59,7 +79,7 @@
         prompt.onclick = function (e) {
             e.stopPropagation();
         };
-        
+
         return prompt;
     }
 
@@ -95,13 +115,13 @@
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
                 <li style="color: #F3E500;">Classroom</li>
-                <li style="color: #F3E500;">Appointments</li>
+                <li><a href="#">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="ticket.html">Tickets</a></li>
                 <li><a href="setting.html">Settings</a></li>
                 <li><a href="help.html">Help</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
         <div class="content">

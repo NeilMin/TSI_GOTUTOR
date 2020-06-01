@@ -3,6 +3,25 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
+    <script>
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                document.cookie = "";
+                window.location.replace("login.html")
+            });
+        }
+
+        gapi.load('auth2', function () {
+            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
+                if (!auth2.isSignedIn.get()) {
+                    window.location.replace("login.html")
+                }
+            });
+
+        });
+    </script>
 </head>
 
 <body>
@@ -10,33 +29,17 @@
     <div class="container">
         <nav>
             <img src="images/GoTutor.png" alt="logo" class="logo">
-            <ul class="classrooms">
-                <li>
-                    <a href="#ClassroomID=1">CSE 140</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=2">CSE 101</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=3">CSE 130</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=4">CSE 110</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=5">CSE 140L</a>
-                </li>
-            </ul>
+            <!--TODO: Classroom navigation-->
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
                 <li><a href="classroom.html">Classroom</a></li>
-                <li><a href="appointment.html">Appointments</a></li>
+                <li><a href="#">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li style="color: #F3E500;">Tutors</li>
                 <li><a href="ticket.html">Tickets</a></li>
                 <li><a href="setting.html">Settings</a></li>
                 <li><a href="help.html">Help</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
         <div class="content">
@@ -88,7 +91,7 @@
                         <td>TO DO</td>
                     </tr>
                 </table>
-                <br />
+                <br/>
                 <form id="editTutorProfile">
                     <label>Edit tutor profile</label>
                     <br/>
@@ -103,7 +106,7 @@
                     <input type="text" size="100"/>
                     <button id="save" class="buttons">Save</button>
                 </form>
-                <br />
+                <br/>
                 <form id="selectTutor">
                     <label>Select a tutor</label>
                     <select id="tutorNametList">

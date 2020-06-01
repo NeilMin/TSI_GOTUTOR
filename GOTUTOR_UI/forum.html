@@ -10,23 +10,23 @@
     <script src="thread.js"></script>
     <script>
         function signOut() {
-              var auth2 = gapi.auth2.getAuthInstance();
-              auth2.signOut().then(function () {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
                 console.log('User signed out.');
-                document.cookie="";
+                document.cookie = "";
                 window.location.replace("login.html")
-              });
+            });
         }
-        gapi.load('auth2', function() {
-        var auth2 = gapi.auth2.init({client_id:"294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function(auth2){
-        if(!auth2.isSignedIn.get()){
-            window.location.replace("login.html")
-        }
+
+        gapi.load('auth2', function () {
+            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
+                if (!auth2.isSignedIn.get()) {
+                    window.location.replace("login.html")
+                }
+            });
+
         });
-    
-    });
     </script>
-      
 </head>
 
 <body>
@@ -38,8 +38,8 @@
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
                 <li><a href="classroom.html">Classroom</a></li>
-                <li style="color: #F3E500;">Appointments</li>
-                <li><a href="forum.html">Forum</a></li>
+                <li><a href="#">Appointments</a></li>
+                <li style="color: #F3E500;">Forum</li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="ticket.html">Tickets</a></li>
                 <li><a href="setting.html">Settings</a></li>

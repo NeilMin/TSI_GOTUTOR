@@ -110,7 +110,8 @@ app.get('/fetchAppointments', function (req, res) {
         res.send(JSON.stringify({
             available:values[0],
             unavailable:values[1],
-            myAppointments:values[2]
+            myAppointments:values[2],
+            uid:req.session.uid
         }))
     })
 

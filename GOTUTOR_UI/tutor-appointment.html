@@ -12,7 +12,7 @@
     <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.js'></script>
     <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.js'></script>
     <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.js'></script>
-
+    <script src="https://unpkg.com/@fullcalendar/interaction@4.4.0/main.js"></script>
     <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <!--TODO: Export this as a POST for better design-->
@@ -20,20 +20,66 @@
         //connect web socket for communicating reservation made by this user and other user
         var socket;
         //mapping time slot status to color
-        const colorMap = new Map([["yes", "green"], ["no", "red"], ["me", "blue"]]);
+        const colorMap = new Map([["yes", "green"],["yes-me", "yellow"], ["no", "red"], ["me", "blue"],["changed","purple"],['deleted','grey'],['new','#ADD8E6']]);
 
         //view->controller
-
-        function translateDate(d) {
-            return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
-        }
+        
         //view
         var calendar;
+        var newEventIds=new Set();
+        var changedEventIds=new Set();
+        var removedEventIds=new Set();
+        
+        function setColor(event){
+            var modFlag=event.extendedProps.modified;
+            if (!modFlag) {
+                event.setProp("backgroundColor", colorMap.get(event.extendedProps.available));
+            }
+            else if (modFlag&1) {
+                event.setProp("backgroundColor", colorMap.get("new"));
+            }
+            else if (modFlag&2){
+                event.setProp("backgroundColor", colorMap.get("changed"));
+            }
+            else if (modFlag&4){
+                event.setProp("backgroundColor", colorMap.get("deleted"));
+            }
+        }
         function markOccupied(officeHourId) {
             var toModify = calendar.getEventById(officeHourId);
+            if (toModify.extendedProps.available=="yes-me") {
+                toModify.setDate(toModify.extendedProps.oriStart,toModify.extendedProps.oriEnd);
+                toModify.setExtendedProp("available","me")
+                toModify.setExtendedProp("modified",0)
+                changedEventIds.delete(officeHourId);
+                removedEventIds.delete(officeHourId);
+            }else{
             toModify.setExtendedProp("available", "no");
-            toModify.setProp("backgroundColor", colorMap.get("no"));
+            }
+            setColor(toModify);
         }
+        
+        function handleEventDrag(eventDropInfo){
+            var eventId=eventDropInfo.event.id
+            if(!newEventIds.has(eventId)){
+                changedEventIds.add(eventId);
+            }
+            removedEventIds.delete(eventId);
+            eventDropInfo.event.setExtendedProp('modified',eventDropInfo.event.extendedProps.modified|2);
+        }
+        
+        function handleDateSelect(selectionInfo){
+            var eventId=calendar.addEvent({
+                title:"new office hour",
+                start:selectionInfo.start,
+                end:selectionInfo.end,
+                backgroundColor:colorMap.get("new"),
+                modified:1,
+                available:"yes-me"
+            })
+            newEventIds.add(eventId);
+        }
+        
         
         function initCalendar(events) {
             //The ID of element to put calendar is 'cal'
@@ -44,16 +90,15 @@
             //Initialize calendar
             calendar = new FullCalendar.Calendar(calendarEl, {
                 events: events,
-                plugins: ['timeGrid'],
-                eventClick: function (eventClickInfo) {
-                    if (eventClickInfo.event.extendedProps.available !== "yes") {
-                        eventClickInfo.el.appendChild(getOccupiedDialog());
-                        return;
-                    }
-
-                    eventClickInfo.el.appendChild(getNewAppointmentDialog(eventClickInfo.event));
-                },
+                plugins: ['timeGrid','interaction' ],
+                eventDrop: handleEventDrag,
+                eventResize:handleEventDrag,
+                selectable: true,
+                selectMirror:true,
+                select:handleDateSelect,
                 defaultView: 'timeGrid',
+                eventResizableFromStart:true,
+                modified:0,
                 visibleRange:{start:start,end:end},
                 header: false
             });
@@ -66,48 +111,44 @@
             socket.on('new', markOccupied)
         }
         function transformResponse(content) {
+            var uid=content.uid;
             var events=content.available.map(e=>(
                 {
                     start:e.start*1000,
                     end:e.end*1000,
+                    oriStart:e.start*1000,
+                    oriEnd:e.end*1000,
                     title:e.tutor,
                     id:e.id,
-                    available:"yes",
-                    backgroundColor:colorMap.get("yes")
+                    available:e.tutor==uid?"yes-me":"yes",
+                    editable:e.tutor==uid,
+                    eventResizableFromStart:true
                 }
             ))
             var myAppointments=new Map()
             content.myAppointments.forEach(e => {
-                myAppointments.set(e.officeHourId,{id:e.id,description:e.description});        function getOccupiedDialog() {
-            var message = document.createElement("p");
-            message.textContent = "This slot have been reserved";
-            setTimeout(() => {
-                message.remove();
-            }, 5000);
-            return message;
-        }
-
+                myAppointments.set(e.officeHourId,{id:e.id,description:e.description});
             });
             content.unavailable.forEach(e=>{
                 e={
                     start:e.start*1000,
                     end:e.end*1000,
                     title:e.tutor,
-                    id:e.id
+                    id:e.id,
+                    editable:false
                 }
                 var appointment=myAppointments.get(e.id)
                 if (appointment){
                     e.available='me'
-                    e.backgroundColor=colorMap.get("me")
                     e.appointmentId=appointment.id;
                     e.appointmentDescription=appointment.description;
                 }else{
                     e.available='no'
-                    e.backgroundColor=colorMap.get("no")
                 }
                 events.push(e);
             })
 //            initPeerListener()
+            events.forEach(e=>{e.backgroundColor=colorMap.get(e.available)});
             return events;
         }
         

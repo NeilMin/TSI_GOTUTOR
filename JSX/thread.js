@@ -1,6 +1,6 @@
 //import React from 'react';
 document.addEventListener("DOMContentLoaded", function () {
-    var replySocket = io.connect("http://gotutor.com:8080/forumReply")
+    var replySocket = io.connect("http://gotutor.com/forumReply");
     class Reply extends React.Component {
         render() {
             return (<div className="reply">
@@ -12,13 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
     class ThreadRepliesContainer extends React.Component {
 
         constructor(props) {
-            super(props)
-            this.repliesInit = this.repliesInit.bind(this)
-            this.state={replies:[],newReplyVal:""}
-            this.handleReplyInputChange = this.handleReplyInputChange.bind(this)
-            this.handleReplyInput = this.handleReplyInput.bind(this)
-            this.handleOtherReply = this.handleOtherReply.bind(this)
-            replySocket.emit('fetch', props.threadId, this.repliesInit)
+            super(props);
+            this.repliesInit = this.repliesInit.bind(this);
+            this.state={replies:[],newReplyVal:""};
+            this.handleReplyInputChange = this.handleReplyInputChange.bind(this);
+            this.handleReplyInput = this.handleReplyInput.bind(this);
+            this.handleOtherReply = this.handleOtherReply.bind(this);
+            replySocket.emit('fetch', props.threadId, this.repliesInit);
             replySocket.on("otherReply", this.handleOtherReply)
         }
         
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     class Thread extends React.Component {
         constructor(props){
-            super(props)
+            super(props);
             this.state={expanded:false};
             this.toggleExpand=this.toggleExpand.bind(this);
         }
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
             this.state = { threads: props.threads };
         }
         addThread(threadContent) {
-            ;
+
             this.state.threads.unshift(threadContent);
             this.setState({
                 threads: this.state.threads
@@ -92,16 +92,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    var socket = io.connect("http://gotutor.com:8080/forumThread");
-    var threadList = document.getElementById('threads')
+    var socket = io.connect("http://gotutor.com/forumThread");
+    var threadList = document.getElementById('threads');
     socket.on("oldThread", function (data) {
-        console.log(data)
+        console.log(data);
         var container = ReactDOM.render(<ThreadContainer threads={data} />, threadList);
-        var form = document.getElementById("new-thread")
+        var form = document.getElementById("new-thread");
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             socket.emit('newThread', { title: form.title.value, body: form.body.value })
-        })
+        });
         socket.on("otherThread", data => container.addThread(data))
     })
-})
+});

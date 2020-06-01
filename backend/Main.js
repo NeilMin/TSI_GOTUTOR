@@ -1,4 +1,5 @@
 //process.env.DEBUG="*";
+
 const login = require('./Login.js');
 const DUMMY_CLASSROOM="a";
 // Cookie
@@ -11,9 +12,6 @@ const app = express();
 // HTTP
 const http = require('http');
 const httpServer = http.createServer(app);
-
-// MySQL
-//const mysql = require('mysql');
 
 // Multer
 const multer = require('multer');
@@ -39,13 +37,7 @@ const cookieSessionMiddleware = cookieSession({
     name: 's',
     secret: 'devel'
 });
-/*
-const con = mysql.createConnection({
-    host: "localhost",
-    user: "team14dbUser",
-    password: "team14TSIdb@user"
-});
-*/
+
 sio.use(function (socket, next) {
     //console.log(socket.request);
     cookieSessionMiddleware(socket.request, socket.request.res || {}, next);
@@ -126,27 +118,6 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
     res.redirect("writeup.html");
 });
 
-app.post('/postThread', upload.single('title'), upload.single('body'), (req, res, next) => {
-    const threadTitle = req.title;
-    const threadBody = req.body;
-
-    if (!threadTitle || !threadBody) {
-        const error = new Error('Please complete forum post');
-        error.httpStatusCode = 400;
-        return next(error)
-    }
-
-    console.log(threadTitle);
-    console.log(threadBody);
-    res.redirect("/forum.html");
-});
-
 httpServer.listen(80, function () {
     console.log("Listening on port 80");
 });
-/*
-con.connect(function (err) {
-    const sql = "use team14db;";
-    con.query(sql);
-});
-*/

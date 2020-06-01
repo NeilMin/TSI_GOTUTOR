@@ -2,3 +2,4 @@
 node_modules/
 build/
 GOTUTOR.iml
+GOTUTOR_UI/thread.js

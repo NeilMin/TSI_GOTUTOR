@@ -97,18 +97,19 @@ app.use(function (req, res, next) {
 
 
 app.get('/fetchAppointments', function (req, res) {
-    var appointmentsInfo;
-    var queries=[];
-    queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM,null).then(
-        r=>{appointmentsInfo.available=r}
-    ));
-    queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM,null).then(
-        r=>{appointmentsInfo.unavailable=r}
-    ))
-    queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM,req.session.uid).then(
-        r=>{appointmentsInfo.myAppointments=r}
-    ))
-    Promise.all(queries).then(res=JSON.stringify(appointmentsInfo))
+    var appointmentsInfo={};
+    var queries=[
+        model.readAvailableOfficeHour(DUMMY_CLASSROOM,null),
+        model.readUnavailableOfficeHour(DUMMY_CLASSROOM,null),
+        model.readAppointmentByStudentId(DUMMY_CLASSROOM,req.session.uid)
+    ];
+    Promise.all(queries).then(function(values){
+        res.send(JSON.stringify({
+            available:values[0],
+            unavailable:values[1],
+            myAppointments:values[2]
+        }))
+    })
 });
 
 app.post('/googleAuth', login);

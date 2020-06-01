@@ -99,30 +99,8 @@ app.use(function (req, res, next) {
 
 
 app.get('/fetchAppointments', function (req, res) {
-    var appointmentsInfo;
-    var queries = [];
-
-    queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
-        r => {
-            appointmentsInfo.available = r
-        }
-    ));
-    queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
-        r => {
-            appointmentsInfo.unavailable = r
-        }
-    ));
-    queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
-        r => {
-            appointmentsInfo.myAppointments = r
-        }
-    ));
-
-    Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
-});
-
-app.get('/fetchOfficeHours', function (req, res) {
-    //TODO: Implement office hour query
+    //TODO: Implement appointment query
+    //
     // var appointmentsInfo;
     // var queries = [];
     //
@@ -144,14 +122,45 @@ app.get('/fetchOfficeHours', function (req, res) {
     //
     // Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
     res.json([{
-            id: 1,
-            title: "Office hour",
-            daysOfWeek: ['4'],
-            startTime: '10:45:00',
-            endTime: '12:45:00',
-            start:"2020-06-02T10:45:00",
+            id: 2,
+            title: "Appointment",
+            start: "2020-06-02T10:45:00",
             end: "2020-06-02T12:45:00",
-            available: "yes"
+            available: "yes",
+        }
+        ]
+    );
+});
+
+app.get('/fetchOfficeHours', function (req, res) {
+    //TODO: Implement office hour query
+    //
+    // var appointmentsInfo;
+    // var queries = [];
+    //
+    // queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
+    //     r => {
+    //         appointmentsInfo.available = r
+    //     }
+    // ));
+    // queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
+    //     r => {
+    //         appointmentsInfo.unavailable = r
+    //     }
+    // ));
+    // queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
+    //     r => {
+    //         appointmentsInfo.myAppointments = r
+    //     }
+    // ));
+    //
+    // Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
+    res.json([{
+            id: 2,
+            title: "Office hour",
+            start: "2020-06-02T10:45:00",
+            end: "2020-06-02T12:45:00",
+            available: "yes",
         }
         ]
     );

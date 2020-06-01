@@ -1,8 +1,10 @@
 // Google Authentication
+const DUMMY_CLASSROOM="a";
 const {OAuth2Client} = require('google-auth-library');
 
 const CLIENT_ID = require('./CLIENT_ID');
 const googleClient = new OAuth2Client(CLIENT_ID);
+const model=require('./model');
 
 module.exports=function (req, res) {
     let buffer = "";
@@ -21,7 +23,10 @@ module.exports=function (req, res) {
 
             // Get user information and put into JSON
             const payload = ticket.getPayload();
-            req.session.uid = payload['sub'];
+            var UID=payload['email'];
+            UID=UID.substr(0,UID.indexOf('@'));
+            req.session.uid = UID;
+            model.createUser(UID,'student',DUMMY_CLASSROOM).catch(e=>{});
             req.sessionOptions.maxAge = payload['exp'] * 1e3 - Date.now();
             res.send(JSON.stringify({
                 success: true,
@@ -31,6 +36,7 @@ module.exports=function (req, res) {
             console.log(error);
             res.send(JSON.stringify({success: false, failedReason: error}));
         }
+        
     })
 }
 

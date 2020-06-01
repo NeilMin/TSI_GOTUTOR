@@ -62,23 +62,7 @@
 
 
 <script>
-    //TODO: Configure calendar in such a way: Add office hour, remove by clicking on it and pressing remove button
-    //connect web socket for communicating reservation made by this user and other user
     var socket;
-    //mapping time slot status to color
-
-    //view->controller
-    function reserveAppointment(officeHourId, question) {
-        socket.emit('reserve', {id: officeHourId, question: question});
-    }
-
-    //controller->view
-    //listen for new reservation from other users
-    function initPeerListener(calendar) {
-        socket = io.connect('http://gotutor.com');
-        socket.on('new', markOccupied)
-    }
-
     //Translate REST API response to the format accepted by full calendar api
     function transformEvent(info) {
         //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
@@ -89,25 +73,6 @@
     //view
     var calendar;
 
-    function removeOfficeHour(event) {
-        var prompt = document.createElement("div");
-        var submit = document.createElement("button");
-        var submitText = document.createElement("p");
-        submitText.textContent = "Remove office hour";
-        submit.appendChild(submitText);
-        submit.onclick = function () {
-            //TODO: Remove OH
-        };
-        prompt.appendChild(submit);
-
-        //Prevent repetitive attachment of frames
-        prompt.onclick = function (e) {
-            e.stopPropagation();
-        };
-
-        return prompt;
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
         //The ID of element to put calendar is 'cal'
         var calendarEl = document.getElementById('cal');
@@ -116,16 +81,11 @@
         calendar = new FullCalendar.Calendar(calendarEl, {
             events: '/fetchOfficeHours',
             plugins: ['timeGrid'],
-            eventClick: function (eventClickInfo) {
-                eventClickInfo.el.appendChild(removeOfficeHour(eventClickInfo.event));
-            },
-
             eventDataTransform: transformEvent,
             //eventSourceSuccess: initPeerListener(calendar, markOccupied),
             defaultView: 'timeGridWeek',
             header: false
         });
-
 
         calendar.render();
     });
@@ -151,12 +111,6 @@
         <div class="content">
             <h1>Classroom Office Hours</h1>
             <div id="cal"></div>
-            <form action="/uploadTable" enctype="multipart/form-data" method="POST">
-                <p>Upload student spreadsheet</p>
-                <input type="file" name="students.xlsx" class="buttons"/>
-                <input type="submit" value="Upload a file" class="buttons"/>
-            </form>
-
         </div>
     </div>
 </div>

@@ -123,109 +123,21 @@
             </ul>
         </nav>
         <div class="content">
+            <h1>Appointment calendar</h1>
             <div id="cal"></div>
-            <table id="acceptedAppointment">
-                Accepted appointments
-                <tr>
-                    <th>Number</th>
-                    <th>Student name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Problem</th>
-                    <th>Submission date</th>
-                    <th>Submission time</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>01</td>
-                    <td>Smith</td>
-                    <td>0407</td>
-                    <td>1200</td>
-                    <td>Installation problem</td>
-                    <td>0514</td>
-                    <td>1924</td>
-                    <td>Approved</td>
-                </tr>
-            </table>
-            <br/>
-            <form id="cancelAppointment">
-                <label>Cancel appointments</label>
-                <select id="acceptedAppointmentList">
-                    <option value="1">one</option>
-                    <option value="2">two</option>
-                    <option value="3">three</option>
-                    <option value="4">four</option>
-                </select>
-                <button id="cancel">Cancel</button>
+            <h1>Add an appointment</h1>
+            <form action="/addAppointment" method="GET">
+                <label>
+                    Date <input type="date" name="appointmentDate"/>
+                </label>
+                <label>
+                   Begin Time <input type="time" name="beginTime"/>
+                </label>
+                <label>
+                    End Time <input type="time" name="endTime"/>
+                </label>
+                <input type="submit" value="Create appointment" class="buttons"/>
             </form>
-            <br/>
-            <table id="futureAppointment">
-                Future appointments
-                <tr>
-                    <th>Number</th>
-                    <th>Student name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Problem</th>
-                    <th>Submission date</th>
-                    <th>Submission time</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>01</td>
-                    <td>Smith</td>
-                    <td>0407</td>
-                    <td>1200</td>
-                    <td>Installation problem</td>
-                    <td>0514</td>
-                    <td>1924</td>
-                    <td>Pending</td>
-                </tr>
-            </table>
-            <br/>
-            <label>Select an appointment</label>
-            <select id="futureAppointmentList">
-                <option value="1">one</option>
-                <option value="2">two</option>
-                <option value="3">three</option>
-                <option value="4">four</option>
-            </select>
-            <button id="Approve">Approve</button>
-            <button id="Decline">Decline</button>
-            <br/>
-            <br/>
-            <table id="pastAppointment">
-                Past appointments
-                <tr>
-                    <th>Number</th>
-                    <th>Student name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Problem</th>
-                    <th>Submission date</th>
-                    <th>Submission time</th>
-                    <th>Status</th>
-                </tr>
-                <tr>
-                    <td>01</td>
-                    <td>Smith</td>
-                    <td>0407</td>
-                    <td>1200</td>
-                    <td>Installation problem</td>
-                    <td>0514</td>
-                    <td>1925</td>
-                    <td>Declined/Approved</td>
-                </tr>
-            </table>
-            <br/>
-            <label>Select an appointment</label>
-            <select id="pastAppointmentList">
-                <option value="1">one</option>
-                <option value="2">two</option>
-                <option value="3">three</option>
-                <option value="4">four</option>
-            </select>
-            <button id="requestFeedback">Request feedback</button>
         </div>
     </div>
 </div>

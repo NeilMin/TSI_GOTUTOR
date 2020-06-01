@@ -100,36 +100,26 @@ app.use(function (req, res, next) {
 
 app.get('/fetchAppointments', function (req, res) {
     //TODO: Implement appointment query
-    //
-    // var appointmentsInfo;
-    // var queries = [];
-    //
-    // queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
-    //     r => {
-    //         appointmentsInfo.available = r
-    //     }
-    // ));
-    // queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
-    //     r => {
-    //         appointmentsInfo.unavailable = r
-    //     }
-    // ));
-    // queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
-    //     r => {
-    //         appointmentsInfo.myAppointments = r
-    //     }
-    // ));
-    //
-    // Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
-    res.json([{
-            id: 2,
-            title: "Appointment",
-            start: "2020-06-02T10:45:00",
-            end: "2020-06-02T12:45:00",
-            available: "yes",
+    var appointmentsInfo;
+    var queries = [];
+
+    queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
+        r => {
+            appointmentsInfo.available = r
         }
-        ]
-    );
+    ));
+    queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
+        r => {
+            appointmentsInfo.unavailable = r
+        }
+    ));
+    queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
+        r => {
+            appointmentsInfo.myAppointments = r
+        }
+    ));
+
+    Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
 });
 
 app.get('/fetchOfficeHours', function (req, res) {
@@ -155,15 +145,18 @@ app.get('/fetchOfficeHours', function (req, res) {
     // ));
     //
     // Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
-    res.json([{
-            id: 2,
-            title: "Office hour",
-            start: "2020-06-02T10:45:00",
-            end: "2020-06-02T12:45:00",
-            available: "yes",
-        }
-        ]
-    );
+});
+
+app.get('/addAppointment', function (req, res) {
+    const appointmentDate = req.query.beginTime;
+    const appointmentBegin = req.query.beginTime;
+    const appointmentEnd = req.query.endTime;
+
+    console.log(appointmentDate);
+    console.log(appointmentBegin);
+    console.log(appointmentEnd);
+
+    res.redirect("/classroom.html");
 });
 
 

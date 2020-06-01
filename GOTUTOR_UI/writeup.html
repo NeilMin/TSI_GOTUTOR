@@ -3,6 +3,27 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
+    <script src="https://apis.google.com/js/platform.js"></script>
+    <!--TODO: Export this as a POST for better design-->
+    <script>
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                document.cookie = "";
+                window.location.replace("login.html")
+            });
+        }
+
+        gapi.load('auth2', function () {
+            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
+                if (!auth2.isSignedIn.get()) {
+                    window.location.replace("login.html")
+                }
+            });
+
+        });
+    </script>
 </head>
 
 <body>
@@ -14,24 +35,24 @@
             <ul class="navigation">
                 <li style="color: #F3E500;">Assignment</li>
                 <li><a href="classroom.html">Classroom</a></li>
-                <li style="color: #F3E500;">Appointments</li>
+                <li><a href="#">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="ticket.html">Tickets</a></li>
                 <li><a href="setting.html">Settings</a></li>
                 <li><a href="help.html">Help</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
         <div class="content">
             <div class="writeup">
-            <!--TODO: Break apart between tutor and student-->
-            <div class="section_title">Current assignment</div>
-            <iframe src="uploads/writeup.pdf" style="width: 100%;height: 800px;border: none;"></iframe>
-            <form action="/uploadfile" enctype="multipart/form-data" method="POST">
-                <input type="file" name="writeup.pdf"  class="buttons"/>
-                <input type="submit" value="Upload a file" class="buttons"/>
-            </form>
+                <!--TODO: Break apart between tutor and student-->
+                <div class="section_title">Current assignment</div>
+                <iframe src="uploads/writeup.pdf" style="width: 100%;height: 800px;border: none;"></iframe>
+                <form action="/uploadfile" enctype="multipart/form-data" method="POST">
+                    <input type="file" name="writeup.pdf" class="buttons"/>
+                    <input type="submit" value="Upload a file" class="buttons"/>
+                </form>
             </div>
         </div>
     </div>

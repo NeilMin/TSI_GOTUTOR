@@ -16,7 +16,6 @@
     <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <script>
-        
         //connect web socket for communicating reservation made by this user and other user
         var socket;
         //mapping time slot status to color
@@ -26,7 +25,9 @@
         function reserveAppointment(officeHourId, question,date) {
             socket.emit('reserve', {id: officeHourId, question: question,date:date});
         }
-
+        function translateDate(d) {
+            return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+        }
         //view
         var calendar;
 
@@ -44,7 +45,7 @@
             submit.appendChild(submitText);
             submit.onclick = function () {
                 //tell backend reservation made
-                reserveAppointment(event.id, question.value,event.start.getFullYear()+'-'+(event.start.getMonth()+1)+'-'+event.start.getDate());
+                reserveAppointment(event.id, question.value,translateDate(event.start));
                 event.setExtendedProp("available", "me");
                 event.setProp("backgroundColor", colorMap.get("me"));
                 //remove the prompt
@@ -149,7 +150,6 @@
                 initPeerListener();
             })
         });
-
     </script>
 </head>
 

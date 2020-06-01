@@ -10,27 +10,11 @@
     <div class="container">
         <nav>
             <img src="images/GoTutor.png" alt="logo" class="logo">
-            <ul class="classrooms">
-                <li>
-                    <a href="#ClassroomID=1">CSE 140</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=2">CSE 101</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=3">CSE 130</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=4">CSE 110</a>
-                </li>
-                <li>
-                    <a href="#ClassroomID=5">CSE 140L</a>
-                </li>
-            </ul>
+            <!--TODO: Classroom navigation-->
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
                 <li style="color: #F3E500;">Classroom</li>
-                <li><a href="appointment.html">Appointments</a></li>
+                <li style="color: #F3E500;">Appointments</li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="ticket.html">Tickets</a></li>
@@ -40,82 +24,88 @@
             </ul>
         </nav>
         <div class="content">
-            <div class="student">
-                Section for student:
-                <br />
-                Available tutor hours form
-                <form>
-                    <label>
-                        Tutor preference
-                    </label>
-                    <select id="tutorPreferList">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <label>
-                        Tutor name
-                    </label>
-                    <select id="tutorNameList">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <label>
-                        Tutor hour
-                    </label>
-                    <select id="tutorHourList">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <button id="select">Select</button>
+<!--            <div class="student">-->
+<!--                Section for student:-->
+<!--                <br />-->
+<!--                Available tutor hours form-->
+<!--                <form>-->
+<!--                    <label>-->
+<!--                        Tutor preference-->
+<!--                    </label>-->
+<!--                    <select id="tutorPreferList">-->
+<!--                        <option value="1">one</option>-->
+<!--                        <option value="2">two</option>-->
+<!--                        <option value="3">three</option>-->
+<!--                        <option value="4">four</option>-->
+<!--                    </select>-->
+<!--                    <label>-->
+<!--                        Tutor name-->
+<!--                    </label>-->
+<!--                    <select id="tutorNameList">-->
+<!--                        <option value="1">one</option>-->
+<!--                        <option value="2">two</option>-->
+<!--                        <option value="3">three</option>-->
+<!--                        <option value="4">four</option>-->
+<!--                    </select>-->
+<!--                    <label>-->
+<!--                        Tutor hour-->
+<!--                    </label>-->
+<!--                    <select id="tutorHourList">-->
+<!--                        <option value="1">one</option>-->
+<!--                        <option value="2">two</option>-->
+<!--                        <option value="3">three</option>-->
+<!--                        <option value="4">four</option>-->
+<!--                    </select>-->
+<!--                    <button id="select">Select</button>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <br/>-->
+<!--            <div class="tutor">-->
+<!--                Section for tutor:-->
+<!--                <br />-->
+<!--                <button id="studentImport">Student import</button>-->
+<!--                <form id="addOfficeHour">-->
+<!--                    <label>Add office hour</label>-->
+<!--                    <select id="availableOfficeHour">-->
+<!--                        <option value="1">one</option>-->
+<!--                        <option value="2">two</option>-->
+<!--                        <option value="3">three</option>-->
+<!--                        <option value="4">four</option>-->
+<!--                    </select>-->
+<!--                    <button id="add">Add</button>-->
+<!--                </form>-->
+<!--                <form id="removeOfficeHour">-->
+<!--                    <label>Remove office hour</label>-->
+<!--                    <select id="currentOfficeHour">-->
+<!--                        <option value="1">one</option>-->
+<!--                        <option value="2">two</option>-->
+<!--                        <option value="3">three</option>-->
+<!--                        <option value="4">four</option>-->
+<!--                    </select>-->
+<!--                    <button id="add">Remve</button>-->
+<!--                </form>-->
+<!--                <br />-->
+<!--                <table id="officeHourCalendar">-->
+<!--                    officeHourCalendar-->
+<!--                    <tr>-->
+<!--                        <th>Number</th>-->
+<!--                        <th>Tutor name</th>-->
+<!--                        <th>Date</th>-->
+<!--                        <th>Time</th>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td>01</td>-->
+<!--                        <td>Smith</td>-->
+<!--                        <td>0407</td>-->
+<!--                        <td>1200</td>-->
+<!--                    </tr>-->
+<!--                </table>-->
+<!--            </div>-->
+            <div class="content">
+                <form action="/uploadTable" enctype="multipart/form-data" method="POST">
+                    <input type="file" name="students"/>
+                    <input type="submit" value="Upload a file"/>
                 </form>
-            </div>
-            <br/>
-            <div class="tutor">
-                Section for tutor:
-                <br />
-                <button id="studentImport">Student import</button>
-                <form id="addOfficeHour">
-                    <label>Add office hour</label>
-                    <select id="availableOfficeHour">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <button id="add">Add</button>
-                </form>
-                <form id="removeOfficeHour">
-                    <label>Remove office hour</label>
-                    <select id="currentOfficeHour">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <button id="add">Remve</button>
-                </form>
-                <br />
-                <table id="officeHourCalendar">
-                    officeHourCalendar
-                    <tr>
-                        <th>Number</th>
-                        <th>Tutor name</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                    </tr>
-                    <tr>
-                        <td>01</td>
-                        <td>Smith</td>
-                        <td>0407</td>
-                        <td>1200</td>
-                    </tr>
-                </table>
             </div>
         </div>
     </div>

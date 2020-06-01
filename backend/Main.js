@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
         cb(null, 'GOTUTOR_UI/uploads');
     },
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '.pdf');
+        cb(null, file.fieldname);
     }
 });
 
@@ -119,7 +119,7 @@ app.get('/testUser', function (req, res) {
 });
 
 
-app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
+app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
     const file = req.file;
 
     if (!file) {
@@ -130,6 +130,20 @@ app.post('/uploadfile', upload.single('writeup'), (req, res, next) => {
 
     res.redirect("writeup.html");
 });
+
+
+app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
+    const file = req.file;
+
+    if (!file) {
+        const error = new Error('Please upload a file');
+        error.httpStatusCode = 400;
+        return next(error)
+    }
+
+    res.redirect("classroom.html");
+});
+
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");

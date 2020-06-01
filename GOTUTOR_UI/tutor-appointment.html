@@ -14,7 +14,6 @@
 
     <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
-
     <script>
 
         //connect web socket for communicating reservation made by this user and other user
@@ -43,6 +42,7 @@
 
         //view
         var calendar;
+
         function getOccupiedDialog() {
             var message = document.createElement("p");
             message.textContent = "This slot is already reserved.";

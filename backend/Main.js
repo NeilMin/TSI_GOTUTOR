@@ -1,7 +1,7 @@
 //process.env.DEBUG="*";
 
 const login = require('./Login.js');
-const DUMMY_CLASSROOM="a";
+const DUMMY_CLASSROOM = "a";
 // Cookie
 const cookieSession = require('cookie-session');
 
@@ -20,7 +20,7 @@ const multer = require('multer');
 const sio = require("socket.io")(httpServer);
 
 //Database
-const model=require('./model');
+const model = require('./model');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -51,35 +51,38 @@ sio.on("connection", function (socket) {
     })
 });
 
-sio.of('/forumThread').on('connection',function (socket) {
-    model.readForumThread(DUMMY_CLASSROOM,null).then(
-        x=>{console.log(JSON.stringify(x));socket.emit("oldThread",x)}
+sio.of('/forumThread').on('connection', function (socket) {
+    model.readForumThread(DUMMY_CLASSROOM, null).then(
+        x => {
+            console.log(JSON.stringify(x));
+            socket.emit("oldThread", x)
+        }
     );
-    socket.on("newThread",(data)=>{
-        data.userId=socket.request.session.uid;
-        model.createForumThread(data.title,data.body,data.userId,DUMMY_CLASSROOM).then(r=>{
-            data.id=r.getAutoIncrementValue();
-            sio.of('/forumThread').emit("otherThread",data);
+    socket.on("newThread", (data) => {
+        data.userId = socket.request.session.uid;
+        model.createForumThread(data.title, data.body, data.userId, DUMMY_CLASSROOM).then(r => {
+            data.id = r.getAutoIncrementValue();
+            sio.of('/forumThread').emit("otherThread", data);
             console.log(data);
         });
     })
 });
 
-sio.of('/forumReply').on('connection',function (socket) {
-    socket.on('fetch',(s,fn)=>{
+sio.of('/forumReply').on('connection', function (socket) {
+    socket.on('fetch', (s, fn) => {
         socket.join(String(s));
-        model.readForumRepliesByThreadId(s).then(r=>{
+        model.readForumRepliesByThreadId(s).then(r => {
             console.log(r);
             fn(r)
         });
     });
-    socket.on('newReply',(s)=>{
-        s.userId=socket.request.session.uid;
+    socket.on('newReply', (s) => {
+        s.userId = socket.request.session.uid;
         console.log(s);
-        model.createForumReply(s.reply,s.threadId,s.userId).then(r=>{
-            s.id=r.getAutoIncrementValue();
+        model.createForumReply(s.reply, s.threadId, s.userId).then(r => {
+            s.id = r.getAutoIncrementValue();
             console.log(s);
-            sio.of('/forumReply').to(String(s.threadId)).emit('otherReply',s)
+            sio.of('/forumReply').to(String(s.threadId)).emit('otherReply', s)
         })
     })
 });
@@ -95,21 +98,65 @@ app.use(function (req, res, next) {
 });
 
 
-
 app.get('/fetchAppointments', function (req, res) {
     var appointmentsInfo;
-    var queries=[];
-    queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM,null).then(
-        r=>{appointmentsInfo.available=r}
+    var queries = [];
+
+    queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
+        r => {
+            appointmentsInfo.available = r
+        }
     ));
-    queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM,null).then(
-        r=>{appointmentsInfo.unavailable=r}
-    ))
-    queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM,req.session.uid).then(
-        r=>{appointmentsInfo.myAppointments=r}
-    ))
-    Promise.all(queries).then(res=JSON.stringify(appointmentsInfo))
+    queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
+        r => {
+            appointmentsInfo.unavailable = r
+        }
+    ));
+    queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
+        r => {
+            appointmentsInfo.myAppointments = r
+        }
+    ));
+
+    Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
 });
+
+app.get('/fetchOfficeHours', function (req, res) {
+    //TODO: Implement office hour query
+    // var appointmentsInfo;
+    // var queries = [];
+    //
+    // queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
+    //     r => {
+    //         appointmentsInfo.available = r
+    //     }
+    // ));
+    // queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
+    //     r => {
+    //         appointmentsInfo.unavailable = r
+    //     }
+    // ));
+    // queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
+    //     r => {
+    //         appointmentsInfo.myAppointments = r
+    //     }
+    // ));
+    //
+    // Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
+    res.json([{
+            id: 1,
+            title: "Office hour",
+            daysOfWeek: ['4'],
+            startTime: '10:45:00',
+            endTime: '12:45:00',
+            start:"2020-06-02T10:45:00",
+            end: "2020-06-02T12:45:00",
+            available: "yes"
+        }
+        ]
+    );
+});
+
 
 app.post('/googleAuth', login);
 

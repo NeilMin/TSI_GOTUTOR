@@ -3,7 +3,88 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
+
+    <!-- full Calendar import -->
+    <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet'/>
+    <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet'/>
+    <link href='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.css' rel='stylesheet'/>
+    <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.js'></script>
+    <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.js'></script>
+
+    <!-- socket.io imports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
 </head>
+
+<script>
+    //TODO: Configure calendar in such a way: Add office hour, remove by clicking on it and pressing remove button
+    //connect web socket for communicating reservation made by this user and other user
+    var socket;
+    //mapping time slot status to color
+
+    //view->controller
+    function reserveAppointment(officeHourId, question) {
+        socket.emit('reserve', {id: officeHourId, question: question});
+    }
+
+    //controller->view
+    //listen for new reservation from other users
+    function initPeerListener(calendar) {
+        socket = io.connect('http://gotutor.com');
+        socket.on('new', markOccupied)
+    }
+
+    //Translate REST API response to the format accepted by full calendar api
+    function transformEvent(info) {
+        //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
+        info.backgroundColor = colorMap.get(info.available);
+        console.log(info)
+    }
+
+    //view
+    var calendar;
+
+    function removeOfficeHour(event) {
+        var prompt = document.createElement("div");
+        var submit = document.createElement("button");
+        var submitText = document.createElement("p");
+        submitText.textContent = "Remove office hour";
+        submit.appendChild(submitText);
+        submit.onclick = function () {
+            //TODO: Remove OH
+        };
+        prompt.appendChild(submit);
+
+        //Prevent repetitive attachment of frames
+        prompt.onclick = function (e) {
+            e.stopPropagation();
+        };
+        
+        return prompt;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        //The ID of element to put calendar is 'cal'
+        var calendarEl = document.getElementById('cal');
+
+        //Initialize calendar
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            events: '/fetchOfficeHours',
+            plugins: ['timeGrid'],
+            eventClick: function (eventClickInfo) {
+                eventClickInfo.el.appendChild(removeOfficeHour(eventClickInfo.event));
+            },
+
+            eventDataTransform: transformEvent,
+            //eventSourceSuccess: initPeerListener(calendar, markOccupied),
+            defaultView: 'timeGridWeek',
+            header: false
+        });
+
+
+        calendar.render();
+    });
+</script>
 
 <body>
 <div class="bg-main">
@@ -24,88 +105,14 @@
             </ul>
         </nav>
         <div class="content">
-<!--            <div class="student">-->
-<!--                Section for student:-->
-<!--                <br />-->
-<!--                Available tutor hours form-->
-<!--                <form>-->
-<!--                    <label>-->
-<!--                        Tutor preference-->
-<!--                    </label>-->
-<!--                    <select id="tutorPreferList">-->
-<!--                        <option value="1">one</option>-->
-<!--                        <option value="2">two</option>-->
-<!--                        <option value="3">three</option>-->
-<!--                        <option value="4">four</option>-->
-<!--                    </select>-->
-<!--                    <label>-->
-<!--                        Tutor name-->
-<!--                    </label>-->
-<!--                    <select id="tutorNameList">-->
-<!--                        <option value="1">one</option>-->
-<!--                        <option value="2">two</option>-->
-<!--                        <option value="3">three</option>-->
-<!--                        <option value="4">four</option>-->
-<!--                    </select>-->
-<!--                    <label>-->
-<!--                        Tutor hour-->
-<!--                    </label>-->
-<!--                    <select id="tutorHourList">-->
-<!--                        <option value="1">one</option>-->
-<!--                        <option value="2">two</option>-->
-<!--                        <option value="3">three</option>-->
-<!--                        <option value="4">four</option>-->
-<!--                    </select>-->
-<!--                    <button id="select">Select</button>-->
-<!--                </form>-->
-<!--            </div>-->
-<!--            <br/>-->
-<!--            <div class="tutor">-->
-<!--                Section for tutor:-->
-<!--                <br />-->
-<!--                <button id="studentImport">Student import</button>-->
-<!--                <form id="addOfficeHour">-->
-<!--                    <label>Add office hour</label>-->
-<!--                    <select id="availableOfficeHour">-->
-<!--                        <option value="1">one</option>-->
-<!--                        <option value="2">two</option>-->
-<!--                        <option value="3">three</option>-->
-<!--                        <option value="4">four</option>-->
-<!--                    </select>-->
-<!--                    <button id="add">Add</button>-->
-<!--                </form>-->
-<!--                <form id="removeOfficeHour">-->
-<!--                    <label>Remove office hour</label>-->
-<!--                    <select id="currentOfficeHour">-->
-<!--                        <option value="1">one</option>-->
-<!--                        <option value="2">two</option>-->
-<!--                        <option value="3">three</option>-->
-<!--                        <option value="4">four</option>-->
-<!--                    </select>-->
-<!--                    <button id="add">Remve</button>-->
-<!--                </form>-->
-<!--                <br />-->
-<!--                <table id="officeHourCalendar">-->
-<!--                    officeHourCalendar-->
-<!--                    <tr>-->
-<!--                        <th>Number</th>-->
-<!--                        <th>Tutor name</th>-->
-<!--                        <th>Date</th>-->
-<!--                        <th>Time</th>-->
-<!--                    </tr>-->
-<!--                    <tr>-->
-<!--                        <td>01</td>-->
-<!--                        <td>Smith</td>-->
-<!--                        <td>0407</td>-->
-<!--                        <td>1200</td>-->
-<!--                    </tr>-->
-<!--                </table>-->
-<!--            </div>-->
-                <form action="/uploadTable" enctype="multipart/form-data" method="POST">
-                    <input type="file" name="students.xlsx" class="buttons"/>
-                    <input type="submit" value="Upload a file" class="buttons"/>
-                </form>
-        
+            <h1>Classroom Office Hours</h1>
+            <div id="cal"></div>
+            <form action="/uploadTable" enctype="multipart/form-data" method="POST">
+                <p>Upload student spreadsheet</p>
+                <input type="file" name="students.xlsx" class="buttons"/>
+                <input type="submit" value="Upload a file" class="buttons"/>
+            </form>
+
         </div>
     </div>
 </div>

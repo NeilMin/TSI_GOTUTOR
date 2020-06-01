@@ -183,3 +183,12 @@ input[type=text]:focus {
     color: white;
     
 }
+
+.settingsbtns ul{
+    padding-left:20%;
+}
+.settingsbtns ul li{
+    display: inline-block;
+    padding-top: 60px;
+    padding-right: 10%;
+}

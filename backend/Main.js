@@ -1,4 +1,4 @@
-//process.env.DEBUG="*";
+process.env.DEBUG="cookie-session";
 
 const login = require('./Login.js');
 const DUMMY_CLASSROOM="a";
@@ -43,9 +43,10 @@ sio.use(function (socket, next) {
     cookieSessionMiddleware(socket.request, socket.request.res || {}, next);
 });
 
-sio.on("connection", function (socket) {
+sio.of('/appointments').on("connection", function (socket) {
     socket.on("reserve", (data) => {
         console.log(data);
+        model.createAppointment(data.question,data.date,socket.request.session.uid,data.id)
         console.log("from " + socket.request.session.uid);
         socket.broadcast.emit('new', data.id);
     })
@@ -97,7 +98,7 @@ app.use(function (req, res, next) {
 
 
 app.get('/fetchAppointments', function (req, res) {
-    var appointmentsInfo={};
+    console.log(req.session.uid);
     var queries=[
         model.readAvailableOfficeHour(DUMMY_CLASSROOM,null),
         model.readUnavailableOfficeHour(DUMMY_CLASSROOM,null),
@@ -116,6 +117,7 @@ app.post('/googleAuth', login);
 
 app.get('/testUser', function (req, res) {
     req.session.uid = req.query.user;
+    model.createUser(req.query.user,'student',DUMMY_CLASSROOM).catch(e=>{console.log('already exist')});
     res.redirect("/forum.html");
 });
 

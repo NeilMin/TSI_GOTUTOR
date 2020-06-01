@@ -17,7 +17,7 @@ module.exports.readAllClassroom = function () {
 };
 
 module.exports.createUser = function (user, role, classroom) {
-  return db.then(db => { db.getTable('user').insert('iduser', 'user_type', 'classroom_idclassroom').values(user, role, classroom).execute(); });
+  return db.then(db => { return db.getTable('user').insert('iduser', 'user_type', 'classroom_idclassroom').values(user, role, classroom).execute(); });
 };
 
 module.exports.readUserByClassroom = function (classroom) {
@@ -131,9 +131,12 @@ module.exports.readAppointmentByStudentId=function (classroom,user) {
   return db.then(db=>{
     var query=db.getTable('futureAppointment').select('appointmentId','description','officeHourId');
     if (user) {
-      query=query.where('studentId=:id OR tutorId=:id AND classroomId=:cid')      
+      query=query.where('(studentId=:id OR tutorId=:id) AND classroomId=:cid').bind('id',user)
+      console.log("model"+user)
+    }else{
+      query=query.where('classroomId=:cid')
     }
-    return query.bind('id',user).bind('cid',classroom).execute()
+    return query.bind('cid',classroom).execute()
   }).then(r=>(r.fetchAll().map(e=>({
     id:e[0],
     description:e[1],

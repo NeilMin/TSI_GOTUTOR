@@ -23,8 +23,8 @@
         const colorMap = new Map([["yes", "green"], ["no", "red"], ["me", "blue"]]);
 
         //view->controller
-        function reserveAppointment(officeHourId, question) {
-            socket.emit('reserve', {id: officeHourId, question: question});
+        function reserveAppointment(officeHourId, question,date) {
+            socket.emit('reserve', {id: officeHourId, question: question,date:date});
         }
 
         //view
@@ -44,7 +44,7 @@
             submit.appendChild(submitText);
             submit.onclick = function () {
                 //tell backend reservation made
-                reserveAppointment(event.id, question.value);
+                reserveAppointment(event.id, question.value,event.start.getFullYear()+'-'+(event.start.getMonth()+1)+'-'+event.start.getDate());
                 event.setExtendedProp("available", "me");
                 event.setProp("backgroundColor", colorMap.get("me"));
                 //remove the prompt
@@ -100,7 +100,7 @@
         //controller->view
         //listen for new reservation from other users
         function initPeerListener() {
-            socket = io.connect('http://gotutor.com');
+            socket = io.connect('http://gotutor.com/appointments');
             socket.on('new', markOccupied)
         }
         function transformResponse(content) {
@@ -119,13 +119,12 @@
                 myAppointments.set(e.officeHourId,{id:e.id,description:e.description});
             });
             content.unavailable.forEach(e=>{
-                e=e.map(e=>(
-                {
+                e={
                     start:e.start*1000,
                     end:e.end*1000,
                     title:e.tutor,
                     id:e.id
-                }))
+                }
                 var appointment=myAppointments.get(e.id)
                 if (appointment){
                     e.available='me'
@@ -136,6 +135,7 @@
                     e.available='no'
                     e.backgroundColor=colorMap.get("no")
                 }
+                events.push(e);
             })
 //            initPeerListener()
             return events;

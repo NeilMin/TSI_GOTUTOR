@@ -32,5 +32,5 @@ module.exports=function (req, res) {
             res.send(JSON.stringify({success: false, failedReason: error}));
         }
     })
-}
+};
 

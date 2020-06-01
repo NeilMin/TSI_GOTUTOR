@@ -248,8 +248,8 @@ LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
-CREATE USER IF NOT EXISTS `client`;
-GRANT SELECT,INSERT,UPDATE ON * TO `client`;
+CREATE USER IF NOT EXISTS 'team14dbUser' IDENTIFIED BY 'team14TSIdb@user';
+GRANT SELECT,INSERT,UPDATE ON * TO `team14dbUser`;
 
 CREATE OR REPLACE VIEW availableOfficeHour AS SELECT UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_start)) AS time_start, UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_end)) AS time_end,user_iduser,classroom_idclassroom,idofficeHour FROM officeHour WHERE `in effect`=1 AND idofficeHour NOT IN (SELECT idappointment  FROM appointment WHERE date>=CURDATE() AND status != 'denied');
 

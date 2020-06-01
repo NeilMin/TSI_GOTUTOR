@@ -4,10 +4,13 @@
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
     <script src="https://apis.google.com/js/platform.js"></script>
+    
     <script type="module" src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script type="module" src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <script src="thread.js"></script>
+
+    <!--TODO: Export this as a POST for better design-->
     <script>
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();

@@ -3,7 +3,7 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
-    <script src="https://apis.google.com/js/platform.js?onload=init"></script>
+    <script src="https://apis.google.com/js/platform.js"></script>
     <!-- full Calendar import -->
     <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet'/>
     <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet'/>
@@ -14,6 +14,7 @@
 
     <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <!--TODO: Export this as a POST for better design-->
     <script>
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();

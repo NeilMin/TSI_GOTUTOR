@@ -94,8 +94,21 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/fetchAppointments', function (req, res) {
 
+
+app.get('/fetchAppointments', function (req, res) {
+    var appointmentsInfo;
+    var queries=[];
+    queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM,null).then(
+        r=>{appointmentsInfo.available=r}
+    ));
+    queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM,null).then(
+        r=>{appointmentsInfo.unavailable=r}
+    ))
+    queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM,req.session.uid).then(
+        r=>{appointmentsInfo.myAppointments=r}
+    ))
+    Promise.all(queries).then(res=JSON.stringify(appointmentsInfo))
 });
 
 app.post('/googleAuth', login);

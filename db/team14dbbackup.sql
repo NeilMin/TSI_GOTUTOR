@@ -251,9 +251,9 @@ UNLOCK TABLES;
 CREATE USER IF NOT EXISTS `client`;
 GRANT SELECT,INSERT,UPDATE ON * TO `client`;
 
-CREATE OR REPLACE VIEW availableOfficeHour AS SELECT * FROM officeHour WHERE `in effect`=1 AND idofficeHour NOT IN (SELECT idappointment  FROM appointment WHERE date>=CURDATE() AND status != 'denied');
+CREATE OR REPLACE VIEW availableOfficeHour AS SELECT UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_start)) AS time_start, UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_end)) AS time_end,user_iduser,classroom_idclassroom,idofficeHour FROM officeHour WHERE `in effect`=1 AND idofficeHour NOT IN (SELECT idappointment  FROM appointment WHERE date>=CURDATE() AND status != 'denied');
 
-CREATE OR REPLACE VIEW unavailableOfficeHour AS SELECT * FROM officeHour WHERE `in effect`=1 AND idofficeHour IN (SELECT idappointment  FROM appointment WHERE date>=CURDATE() AND status != 'denied');
+CREATE OR REPLACE VIEW unavailableOfficeHour AS SELECT UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_start)) AS time_start, UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_end)) AS time_end,user_iduser,classroom_idclassroom,idofficeHour FROM officeHour WHERE `in effect`=1 AND idofficeHour IN (SELECT idappointment  FROM appointment WHERE date>=CURDATE() AND status != 'denied');
 
 CREATE OR REPLACE VIEW futureAppointment AS SELECT appointment.idappointment AS appointmentId, appointment.description AS `description`,appointment.date AS `date`,appointment.user_iduser AS `studentId`,officeHour.idofficeHour AS officeHourId,officeHour.time_start as time_start,officeHour.time_end AS time_end,officeHour.classroom_idclassroom AS classroomId,officeHour.user_iduser AS tutorId FROM appointment INNER JOIN officeHour ON appointment.officeHour_idofficeHour = officeHour.idofficeHour WHERE appointment.date  >= CURDATE() AND officeHour.`in effect` = 1;
 

@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     var socket = io.connect("http://gotutor.com/forumThread");
-    var threadList = document.getElementById('threads');
+    var threadList = document.getElementById('threads')
     socket.on("oldThread", function (data) {
         console.log(data);
         var container = ReactDOM.render(<ThreadContainer threads={data} />, threadList);

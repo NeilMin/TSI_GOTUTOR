@@ -1,7 +1,7 @@
 //Connect to database
 const DB_NAME = "CSE110";
 const mysqlx = require('@mysql/xdevapi');
-const session = mysqlx.getSession({ user: "team14dbUser", password:"team14TSIdb@user", socket: "/var/run/mysqld/mysqlx.sock", schema: DB_NAME });
+const session = mysqlx.getSession({ user: "client", socket: "/var/run/mysqld/mysqlx.sock", schema: DB_NAME });
 const db = session.then(s => { return s.getSchema(DB_NAME) });
 
 module.exports.createClassroom = function (classroomId) {
@@ -83,27 +83,28 @@ function filter(query,classroom,userId,base) {
 
 function readOfficeHour(table,classroom, tutorId) {
   return db.then(db => {
-    var query = db.getTable(table).select('time_start', 'time_end', 'day_of_week', 'user_iduser', 'idofficeHour');
+    var query = db.getTable(table).select('time_start', 'time_end', 'user_iduser', 'idofficeHour')
     return filter(query,classroom,tutorId,null).execute()
   }).then(r => (
-    r.fetchAll().map(x => ({
-      time_start: x[0],
-      time_end: x[1],
-      day_of_week: x[2],
-      user_iduser: x[3],
-      id: x[4]
-    }))
+    r.fetchAll().map(x => {
+      return {start: x[0],
+        end: x[1],
+        tutor: x[2],
+        id: x[3]
+      }
+    })
   )
   )
 }
 
 module.exports.readUnavailableOfficeHour= function (classroom, tutorId){
-  readOfficeHour('unavailableOfficeHour',classroom, tutorId)
-};
+  return readOfficeHour('unavailableOfficeHour',classroom, tutorId)
+}
 
 module.exports.readAvailableOfficeHour= function (classroom, tutorId){
-  readOfficeHour('availableOfficeHour',classroom, tutorId)
-};
+  return readOfficeHour('availableOfficeHour',classroom, tutorId)
+}
+
 
 module.exports.createAppointment = function (description, date, studentId, officeHourId) {
   return db.then(db => {
@@ -125,9 +126,21 @@ module.exports.updateAppointmentById=function(id,status,description){
       query.set('status',status);
     }
     query.execute() })
-  
-};
-module.exports.readAppointmentByStudentId=function (classroom,user,role) {
+}
+module.exports.readAppointmentByStudentId=function (classroom,user) {
+  return db.then(db=>{
+    var query=db.getTable('futureAppointment').select('appointmentId','description','officeHourId');
+    if (user) {
+      query=query.where('studentId=:id OR tutorId=:id AND classroomId=:cid')      
+    }
+    return query.bind('id',user).bind('cid',classroom).execute()
+  }).then(r=>(r.fetchAll().map(e=>({
+    id:e[0],
+    description:e[1],
+    officeHourId:e[2]
+  }))))
+}
+module.exports.readAppointmentByStudentIdDetailed=function (classroom,user,role) {
   return db.then(db=>{
     var query=db.getTable('futureAppointment').select();
     if (role==='student') {

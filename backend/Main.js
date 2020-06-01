@@ -100,6 +100,7 @@ app.use(function (req, res, next) {
 
 
 app.get('/fetchAppointments', function (req, res) {
+
     console.log(req.session.uid);
     var queries=[
         model.readAvailableOfficeHour(DUMMY_CLASSROOM,null),
@@ -114,43 +115,21 @@ app.get('/fetchAppointments', function (req, res) {
             uid:req.session.uid
         }))
     })
-
 });
 
 app.get('/fetchOfficeHours', function (req, res) {
     //TODO: Implement office hour query
-    // var appointmentsInfo;
-    // var queries = [];
-    //
-    // queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
-    //     r => {
-    //         appointmentsInfo.available = r
-    //     }
-    // ));
-    // queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
-    //     r => {
-    //         appointmentsInfo.unavailable = r
-    //     }
-    // ));
-    // queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
-    //     r => {
-    //         appointmentsInfo.myAppointments = r
-    //     }
-    // ));
-    //
-    // Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
-    res.json([{
-            id: 1,
-            title: "Office hour",
-            daysOfWeek: ['4'],
-            startTime: '10:45:00',
-            endTime: '12:45:00',
-            start:"2020-06-02T10:45:00",
-            end: "2020-06-02T12:45:00",
-            available: "yes"
-        }
-        ]
-    );
+});
+
+app.get('/addAppointment', function (req, res) {
+    const appointmentId = 1;
+    const appointmentTitle = "Appointment";
+    const appointmentDate = req.query.appointmentDate;
+    const appointmentStart = appointmentDate + "T" + req.query.beginTime + ":00";
+    const appointmentEnd = appointmentDate + "T" + req.query.endTime + ":00";
+    //TODO: Ready to insert, need to modify DB functionality
+
+    res.redirect("/tutor-appointment.html");
 });
 
 
@@ -172,7 +151,7 @@ app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
         return next(error)
     }
 
-    res.redirect("writeup.html");
+    res.redirect("tutor-writeup.html");
 });
 
 
@@ -185,7 +164,7 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
         return next(error)
     }
 
-    res.redirect("classroom.html");
+    res.redirect("tutor-classroom.html");
 });
 
 

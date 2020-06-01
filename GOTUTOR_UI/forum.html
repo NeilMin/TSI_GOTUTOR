@@ -9,6 +9,32 @@
     <script type="module" src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <script src="thread.js"></script>
+    <!--TODO: Export this as a POST for better design-->
+    <script>
+        function navigate(toNavigate) {
+            const isTutor = sessionStorage.getItem("isTutor") === "true";
+
+            if (toNavigate === 'assignment') {
+                if (isTutor) {
+                    window.location.replace("tutor-writeup.html");
+                } else {
+                    window.location.replace("student-writeup.html");
+                }
+            } else if (toNavigate === 'classroom') {
+                if (isTutor) {
+                    window.location.replace("tutor-classroom.html");
+                } else {
+                    window.location.replace("student-classroom.html");
+                }
+            } else if (toNavigate === 'appointment') {
+                if (isTutor) {
+                    window.location.replace("tutor-appointment.html");
+                } else {
+                    window.location.replace("student-appointment.html");
+                }
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -18,23 +44,25 @@
             <img src="images/GoTutor.png" alt="logo" class="logo">
             <!--TODO: Classroom navigation-->
             <ul class="navigation">
-                <li><a href="writeup.html">Assignment</a></li>
-                <li><a href="classroom.html">Classroom</a></li>
-                <li><a href="#">Appointments</a></li>
+                <li><a onclick="navigate('assignment');">Assignment</a></li>
+                <li><a onclick="navigate('classroom');">Classroom</a></li>
+                <li><a onclick="navigate('appointment');">Appointments</a></li>
                 <li style="color: #F3E500;">Forum</li>
                 <li><a href="tutor.html">Tutors</a></li>
-                <li><a href="ticket.html">Tickets</a></li>
                 <li><a href="setting.html">Settings</a></li>
                 <li><a href="help.html">Help</a></li>
                 <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
         <div class="content">
+            <h1>Classroom Forum</h1>
             <form id="new-thread">
-                Title:
-                <input type="text" name="title"/>
-                Body:
-                <input type="text" name="body" size="100"/>
+                <label>
+                    Title: <input type="text" name="title"/>
+                </label>
+                <label>
+                    Body: <input type="text" name="body" size="100"/>
+                </label>
                 <input type="submit" value="Post thread!" class="buttons"/>
             </form>
             <div id="threads"></div>

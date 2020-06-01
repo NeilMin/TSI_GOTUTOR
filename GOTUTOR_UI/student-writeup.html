@@ -57,36 +57,23 @@
             <img src="images/GoTutor.png" alt="logo" class="logo">
             <!--TODO: Classroom navigation-->
             <ul class="navigation">
-                <li><a onclick="navigate('assignment');">Assignment</a></li>
+                <li style="color: #F3E500;">Assignment</li>
                 <li><a onclick="navigate('classroom');">Classroom</a></li>
                 <li><a onclick="navigate('appointment');">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="setting.html">Settings</a></li>
-                <li style="color: #F3E500;">Help</li>
+                <li><a href="help.html">Help</a></li>
                 <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
         <div class="content">
-            <div class="both">
-                <h1>How do I ask a question a to the classroom?</h1>
-                <p>Simply navigate to the forum section. Then, you can create a thread by completing the topmost
-                    dialogue. The forum is live, so you can be assured you are always seeing the latest posts on the
-                    forum.</p>
-
-                <h1>How do I upload a write-up or an assignment as a tutor?</h1>
-                <p>Navigate to the assignment section and upload a PDF by completing the dialogue. The PDF will be
-                    displayed for your students to see.</p>
-
-                <h1>I want to view or configure the classroom's office hours.</h1>
-                <p>This is possible via the classroom section. Tutors can add or remove office hours. Anyone enrolled in
-                    the classroom can view this.</p>
-
-                <h1>How do I reserve an appointment?</h1>
-                <p>Simply view the appointment calendar under the appointments section. Click on any open space to
-                    reserve that spot.</p>
+            <div class="writeup">
+                <h1>Current assignment</h1>
+                <iframe src="uploads/writeup.pdf" style="width: 100%;height: 800px;border: none;"></iframe>
             </div>
         </div>
     </div>
 </div>
 </body>
+</html>

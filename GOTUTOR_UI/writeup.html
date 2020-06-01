@@ -24,13 +24,15 @@
             </ul>
         </nav>
         <div class="content">
+            <div class="writeup">
             <!--TODO: Break apart between tutor and student-->
-            <h1>Current assignment</h1>
+            <div class="section_title">Current assignment</div>
             <iframe src="uploads/writeup.pdf" style="width: 100%;height: 800px;border: none;"></iframe>
             <form action="/uploadfile" enctype="multipart/form-data" method="POST">
-                <input type="file" name="writeup.pdf"/>
-                <input type="submit" value="Upload a file"/>
+                <input type="file" name="writeup.pdf"  class="buttons"/>
+                <input type="submit" value="Upload a file" class="buttons"/>
             </form>
+            </div>
         </div>
     </div>
 </div>

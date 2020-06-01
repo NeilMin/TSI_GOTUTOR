@@ -103,11 +103,16 @@ nav a:hover::before {
     float: right;
     width: 80%;
     margin: 30px;
-    outline-style: dotted;
-    outline-color: #F3E500;
     background-color: rgb(4, 43, 72);
     opacity: .9;
+}
 
+.student{
+    margin: 20px;
+}
+
+.tutor{
+    margin: 20px;
 }
 
 /*.both {
@@ -166,3 +171,15 @@ table, th, td {
     transition-duration: 0.5s;
 }
 
+input[type=text] {
+    border: 2px solid #FC8900;
+    border-radius: 4px;
+    height: 20%;
+    font-size: 20px;
+  }
+
+input[type=text]:focus {
+    background-color: #FC8900;
+    color: white;
+    
+}

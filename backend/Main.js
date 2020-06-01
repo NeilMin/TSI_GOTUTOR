@@ -132,10 +132,9 @@ app.get('/addAppointment', function (req, res) {
     const appointmentDate = req.query.appointmentDate;
     const appointmentStart = appointmentDate + "T" + req.query.beginTime + ":00";
     const appointmentEnd = appointmentDate + "T" + req.query.endTime + ":00";
+    //TODO: Ready to insert, need to modify DB functionality
 
-    console.log(appointmentStart);
-
-    res.redirect("/classroom.html");
+    res.redirect("/tutor-appointment.html");
 });
 
 
@@ -156,7 +155,7 @@ app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
         return next(error)
     }
 
-    res.redirect("writeup.html");
+    res.redirect("tutor-writeup.html");
 });
 
 
@@ -169,7 +168,7 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
         return next(error)
     }
 
-    res.redirect("classroom.html");
+    res.redirect("tutor-classroom.html");
 });
 
 

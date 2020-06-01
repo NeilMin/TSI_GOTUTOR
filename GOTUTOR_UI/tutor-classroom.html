@@ -4,7 +4,6 @@
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
     <script src="https://apis.google.com/js/platform.js"></script>
-
     <!-- full Calendar import -->
     <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet'/>
     <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet'/>
@@ -59,74 +58,78 @@
 
         });
     </script>
-    <script>
-        //connect web socket for communicating reservation made by this user and other user
-        var socket;
-        //mapping time slot status to color
-        const colorMap = new Map([["yes", "blue"], ["no", "grey"], ["me", "red"]]);
-
-        //view->controller
-        function reserveAppointment(officeHourId, question) {
-            socket.emit('reserve', {id: officeHourId, question: question});
-        }
-
-        //controller->view
-        //listen for new reservation from other users
-        function initPeerListener(calendar) {
-            socket = io.connect('http://gotutor.com');
-            socket.on('new', markOccupied);
-        }
-
-        //Translate REST API response to the format accepted by full calendar api
-        function transformEvent(info) {
-            //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
-            info.backgroundColor = colorMap.get(info.available);
-            console.log(info);
-        }
-
-        //view
-        var calendar;
-
-        function getOccupiedDialog() {
-            var message = document.createElement("p");
-            message.textContent = "This slot is already reserved.";
-            setTimeout(() => {
-                message.remove();
-            }, 5000);
-            return message;
-        }
-
-        function markOccupied(officeHourId) {
-            var toModify = calendar.getEventById(officeHourId);
-            toModify.setExtendedProp("available", "no");
-            toModify.setProp("backgroundColor", colorMap.get("no"));
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            //The ID of element to put calendar is 'cal'
-            var calendarEl = document.getElementById('cal');
-
-            //Initialize calendar
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                events: '/fetchAppointments',
-                plugins: ['timeGrid'],
-                eventClick: function (eventClickInfo) {
-                    ///TODO: Handle tutor clicks
-                },
-                eventDataTransform: transformEvent,
-                eventSourceSuccess: initPeerListener(calendar, markOccupied),
-                defaultView: 'timeGridWeek',
-                header: false
-            });
+</head>
 
 
-            calendar.render();
+<script>
+    //TODO: Configure calendar in such a way: Add office hour, remove by clicking on it and pressing remove button
+    //connect web socket for communicating reservation made by this user and other user
+    var socket;
+    //mapping time slot status to color
 
-            //setTimeout(()=>{console.log(calendar.getEvents())},1000)
+    //view->controller
+    function reserveAppointment(officeHourId, question) {
+        socket.emit('reserve', {id: officeHourId, question: question});
+    }
+
+    //controller->view
+    //listen for new reservation from other users
+    function initPeerListener(calendar) {
+        socket = io.connect('http://gotutor.com');
+        socket.on('new', markOccupied)
+    }
+
+    //Translate REST API response to the format accepted by full calendar api
+    function transformEvent(info) {
+        //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
+        info.backgroundColor = colorMap.get(info.available);
+        console.log(info)
+    }
+
+    //view
+    var calendar;
+
+    function removeOfficeHour(event) {
+        var prompt = document.createElement("div");
+        var submit = document.createElement("button");
+        var submitText = document.createElement("p");
+        submitText.textContent = "Remove office hour";
+        submit.appendChild(submitText);
+        submit.onclick = function () {
+            //TODO: Remove OH
+        };
+        prompt.appendChild(submit);
+
+        //Prevent repetitive attachment of frames
+        prompt.onclick = function (e) {
+            e.stopPropagation();
+        };
+
+        return prompt;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        //The ID of element to put calendar is 'cal'
+        var calendarEl = document.getElementById('cal');
+
+        //Initialize calendar
+        calendar = new FullCalendar.Calendar(calendarEl, {
+            events: '/fetchOfficeHours',
+            plugins: ['timeGrid'],
+            eventClick: function (eventClickInfo) {
+                eventClickInfo.el.appendChild(removeOfficeHour(eventClickInfo.event));
+            },
+
+            eventDataTransform: transformEvent,
+            //eventSourceSuccess: initPeerListener(calendar, markOccupied),
+            defaultView: 'timeGridWeek',
+            header: false
         });
 
-    </script>
-</head>
+
+        calendar.render();
+    });
+</script>
 
 <body>
 <div class="bg-main">
@@ -136,8 +139,8 @@
             <!--TODO: Classroom navigation-->
             <ul class="navigation">
                 <li><a onclick="navigate('assignment');">Assignment</a></li>
-                <li><a onclick="navigate('classroom');">Classroom</a></li>
-                <li style="color: #F3E500;">Appointments</li>
+                <li style="color: #F3E500;">Classroom</li>
+                <li><a onclick="navigate('appointment');">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="setting.html">Settings</a></li>
@@ -146,23 +149,15 @@
             </ul>
         </nav>
         <div class="content">
-            <h1>Appointment calendar</h1>
+            <h1>Classroom Office Hours</h1>
             <div id="cal"></div>
-            <h1>Add an appointment</h1>
-            <form action="/addAppointment" method="GET">
-                <label>
-                    Date <input type="date" name="appointmentDate"/>
-                </label>
-                <label>
-                   Begin Time <input type="time" name="beginTime"/>
-                </label>
-                <label>
-                    End Time <input type="time" name="endTime"/>
-                </label>
-                <input type="submit" value="Create appointment" class="buttons"/>
+            <form action="/uploadTable" enctype="multipart/form-data" method="POST">
+                <p>Upload student spreadsheet</p>
+                <input type="file" name="students.xlsx" class="buttons"/>
+                <input type="submit" value="Upload a file" class="buttons"/>
             </form>
+
         </div>
     </div>
-</div>
 </div>
 </body>

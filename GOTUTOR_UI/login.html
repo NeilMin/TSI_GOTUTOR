@@ -25,13 +25,14 @@
                     if (response.success) {
                         for (const userInfo in response.userInfos) {
                             sessionStorage.setItem(userInfo, response.userInfos[userInfo]);
+                            //TODO: Determine if user is a tutor!
                             sessionStorage.setItem("isTutor", "false");
                         }
 
                         if (sessionStorage.getItem("isTutor") === "true") {
-                            window.location.replace("tutor-appointment.html#ClassroomID=1");
+                            window.location.replace("tutor-appointment.html");
                         } else {
-                            window.location.replace("student-appointment.html#ClassroomID=1");
+                            window.location.replace("student-appointment.html");
                         }
                     } else {
                         document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;

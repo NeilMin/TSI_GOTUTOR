@@ -6,6 +6,54 @@
     <script src="https://apis.google.com/js/platform.js"></script>
     <!--TODO: Export this as a POST for better design-->
     <script>
+        function navigate(toNavigate) {
+            const isTutor = sessionStorage.getItem("isTutor") === "false";
+
+            if (toNavigate === 'assignment') {
+                if (isTutor) {
+                    window.location.replace("tutor-writeup.html");
+                } else {
+                    window.location.replace("student-writeup.html");
+                }
+            } else if (toNavigate === 'classroom') {
+                if (isTutor) {
+                    window.location.replace("tutor-classroom.html");
+                } else {
+                    window.location.replace("student-classroom.html");
+                }
+            } else if (toNavigate === 'appointment') {
+                if (isTutor) {
+                    window.location.replace("tutor-appointment.html");
+                } else {
+                    window.location.replace("student-appointment.html");
+                }
+            }
+        }
+
+        function navigate(toNavigate) {
+            const isTutor = sessionStorage.getItem("isTutor") === "false";
+
+            if (toNavigate === 'assignment') {
+                if (isTutor) {
+                    window.location.replace("tutor-writeup.html");
+                } else {
+                    window.location.replace("student-writeup.html");
+                }
+            } else if (toNavigate === 'classroom') {
+                if (isTutor) {
+                    window.location.replace("tutor-classroom.html");
+                } else {
+                    window.location.replace("student-classroom.html");
+                }
+            } else if (toNavigate === 'appointment') {
+                if (isTutor) {
+                    window.location.replace("tutor-appointment.html");
+                } else {
+                    window.location.replace("student-appointment.html");
+                }
+            }
+        }
+
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
@@ -33,24 +81,19 @@
             <img src="images/GoTutor.png" alt="logo" class="logo">
             <!--TODO: Classroom navigation-->
             <ul class="navigation">
-                <li><a href="writeup.html">Assignment</a></li>
-                <li><a href="classroom.html">Classroom</a></li>
-                <li><a href="#">Appointments</a></li>
+                <li><a onclick="navigate('assignment');">Assignment</a></li>
+                <li><a onclick="navigate('classroom');">Classroom</a></li>
+                <li><a onclick="navigate('appointment');">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
-                <li><a href="ticket.html">Tickets</a></li>
                 <li style="color: #F3E500;">Settings</li>
                 <li><a href="help.html">Help</a></li>
                 <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
         <div class="content">
-            <div class="settingsbtns">
-                <ul>
-                <li><button class="buttons">Toggle office hours reminder</button></li>
-                <li><button class="buttons">Toggle appointment reminder</button></li>
-                </ul>
-            </div>
+            <button class="buttons">Toggle office hours reminders</button>
+            <button class="buttons">Toggle appointment reminders</button>
         </div>
     </div>
 </div>

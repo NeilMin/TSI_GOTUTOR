@@ -3,3 +3,4 @@ node_modules/
 build/
 GOTUTOR.iml
 GOTUTOR_UI/thread.js
+GOTUTOR_UI/uploads/students.xlsx

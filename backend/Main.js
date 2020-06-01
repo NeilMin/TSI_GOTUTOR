@@ -124,37 +124,16 @@ app.get('/fetchAppointments', function (req, res) {
 
 app.get('/fetchOfficeHours', function (req, res) {
     //TODO: Implement office hour query
-    //
-    // var appointmentsInfo;
-    // var queries = [];
-    //
-    // queries.push(model.readAvailableOfficeHour(DUMMY_CLASSROOM, null).then(
-    //     r => {
-    //         appointmentsInfo.available = r
-    //     }
-    // ));
-    // queries.push(model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null).then(
-    //     r => {
-    //         appointmentsInfo.unavailable = r
-    //     }
-    // ));
-    // queries.push(model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid).then(
-    //     r => {
-    //         appointmentsInfo.myAppointments = r
-    //     }
-    // ));
-    //
-    // Promise.all(queries).then(res = JSON.stringify(appointmentsInfo))
 });
 
 app.get('/addAppointment', function (req, res) {
-    const appointmentDate = req.query.beginTime;
-    const appointmentBegin = req.query.beginTime;
-    const appointmentEnd = req.query.endTime;
+    const appointmentId = 1;
+    const appointmentTitle = "Appointment";
+    const appointmentDate = req.query.appointmentDate;
+    const appointmentStart = appointmentDate + "T" + req.query.beginTime + ":00";
+    const appointmentEnd = appointmentDate + "T" + req.query.endTime + ":00";
 
-    console.log(appointmentDate);
-    console.log(appointmentBegin);
-    console.log(appointmentEnd);
+    console.log(appointmentStart);
 
     res.redirect("/classroom.html");
 });

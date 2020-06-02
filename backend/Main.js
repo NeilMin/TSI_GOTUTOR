@@ -25,9 +25,6 @@ const model = require('./model');
 //FS
 const fs = require('fs');
 
-//Simple pop-up
-var popup = require('popups');
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'GOTUTOR_UI/uploads');
@@ -177,7 +174,7 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
     res.redirect("tutor-classroom.html");
 });
 
-app.post('/textSuggest', (req, res, next) => {
+app.get('/textSuggest', function (req, res) {
     const textBody = req.query.textBody;
     const currentDate = new Date();
     const textName = "suggestions/suggestion-" + req.session.uid + "-" + currentDate.toISOString().slice(0, 19) + ".txt";
@@ -186,9 +183,7 @@ app.post('/textSuggest', (req, res, next) => {
         if (err) throw err;
     });
 
-    popup.alert({content: 'Successfully submitted feedback!'});
-
-    next();
+    res.redirect("settings.html");
 });
 
 httpServer.listen(80, function () {

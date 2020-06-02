@@ -176,7 +176,8 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
 
 app.get('/textSuggest', function (req, res) {
     const textBody = req.textBody;
-    const textName = "suggestion-" + req.session.uid + Date() + ".txt";
+    const currentDate = new Date();
+    const textName = "suggestions/suggestion-" + req.session.uid + "-" + currentDate.toISOString().slice(0, 10) + ".txt";
 
     fs.writeFile(textName, textBody, (err) => {
         if (err) throw err;

@@ -1,7 +1,7 @@
 //process.env.DEBUG="*";
-
 const login = require('./Login.js');
 const DUMMY_CLASSROOM = "a";
+
 // Cookie
 const cookieSession = require('cookie-session');
 
@@ -24,6 +24,9 @@ const model = require('./model');
 
 //FS
 const fs = require('fs');
+
+//Simple pop-up
+var popup = require('popups');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -174,7 +177,7 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
     res.redirect("tutor-classroom.html");
 });
 
-app.get('/textSuggest', function (req, res) {
+app.post('/textSuggest', (req, res, next) => {
     const textBody = req.query.textBody;
     const currentDate = new Date();
     const textName = "suggestions/suggestion-" + req.session.uid + "-" + currentDate.toISOString().slice(0, 19) + ".txt";
@@ -183,7 +186,9 @@ app.get('/textSuggest', function (req, res) {
         if (err) throw err;
     });
 
-    res.end();
+    popup.alert({content: 'Successfully submitted feedback!'});
+
+    next();
 });
 
 httpServer.listen(80, function () {

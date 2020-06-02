@@ -47,8 +47,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 {this.state.replies.map(x => (<Reply key={x.id} reply={x.reply} userId={x.userId}></Reply>))}
                 <form className="newReply" onSubmit={this.handleReplyInput}>
                     <label>New Reply</label>
+                    Reply:
                     <input type="text" value={this.state.newReplyVal} onChange={this.handleReplyInputChange}/>
-                    <input type="submit" value="Post reply."/>
+                    <input type="submit" value="Post reply." class="buttons"/>
                 </form>
             </div>)
         }
@@ -68,8 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
         render() {
             return (<div class={"wholeThread"}>
                 <div className="threadMain" onClick={this.toggleExpand}>
-                    <h4>{this.props.content.title}</h4>
-                    <p>{this.props.content.body}</p>
+                    <h4>Title: {this.props.content.title}</h4>
+                    <p>Body: {this.props.content.body}</p>
                     <p>posted by {this.props.content.userId}</p>
                 </div>
                 {this.state.expanded ?

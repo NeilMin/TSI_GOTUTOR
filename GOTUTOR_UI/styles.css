@@ -192,3 +192,13 @@ input[type=text]:focus {
     padding-top: 60px;
     padding-right: 10%;
 }
+
+.threadMain{
+    border: 2px solid #FC8900;
+    border-radius: 4px;
+}
+
+/*.replyMain{
+    border: 2px solid #FC8900;
+    border-radius: 4px;
+}*/

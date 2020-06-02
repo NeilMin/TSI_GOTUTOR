@@ -183,7 +183,7 @@ app.get('/textSuggest', function (req, res) {
         if (err) throw err;
     });
 
-    res.redirect("settings.html");
+    res.redirect("setting.html");
 });
 
 httpServer.listen(80, function () {

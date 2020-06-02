@@ -171,6 +171,20 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
     res.redirect("tutor-classroom.html");
 });
 
+app.get('/textSuggest', function (req, res) {
+    const textBody = req.textBody;
+    const textName = "suggestion-" + req.session.uid + Date() + ".txt";
+
+    var acknowledgeDiv = document.createElement("div");
+    var acknowledgeText = document.createElement("textarea");
+    acknowledgeText.value = "Thank you for your feedback!";
+    acknowledgeDiv.appendChild(acknowledgeText);
+    setTimeout(() => {
+        acknowledgeDiv.remove();
+    }, 5000);
+
+    res.send();
+});
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");

@@ -3,6 +3,12 @@
 <head>
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
+    <style>
+        textarea {
+            height: 100px;
+            width: 500px;
+        }
+    </style>
     <script src="https://apis.google.com/js/platform.js"></script>
     <!--TODO: Export this as a POST for better design-->
     <script>
@@ -70,6 +76,14 @@
         <div class="content">
             <button class="buttons">Toggle office hours reminders</button>
             <button class="buttons">Toggle appointment reminders</button>
+            <br/><br/>
+            <form action="/textSuggest" method="GET">
+                <label>
+                    Provide suggestion to developers!<br/>
+                    <textarea cols="26" name="textBody">Enter feedback</textarea>
+                </label><br/>
+                <input type="submit" value="Give feedback" class="buttons"/>
+            </form>
         </div>
     </div>
 </div>

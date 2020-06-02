@@ -1,7 +1,7 @@
 process.env.DEBUG="cookie-session";
-
 const login = require('./Login.js');
 const DUMMY_CLASSROOM = "a";
+
 // Cookie
 const cookieSession = require('cookie-session');
 
@@ -22,6 +22,9 @@ const sio = require("socket.io")(httpServer);
 //Database
 const model = require('./model');
 
+//FS
+const fs = require('fs');
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'GOTUTOR_UI/uploads');
@@ -38,13 +41,17 @@ const cookieSessionMiddleware = cookieSession({
     secret: 'devel'
 });
 
+app.use(express.json())
+
 sio.use(function (socket, next) {
     //console.log(socket.request);
     cookieSessionMiddleware(socket.request, socket.request.res || {}, next);
 });
 
 sio.of('/appointments').on("connection", function (socket) {
+    //make appointment
     socket.on("reserve", (data) => {
+        //add Appointment
         console.log(data);
         model.createAppointment(data.question,data.date,socket.request.session.uid,data.id)
         console.log("from " + socket.request.session.uid);
@@ -55,7 +62,6 @@ sio.of('/appointments').on("connection", function (socket) {
 sio.of('/forumThread').on('connection', function (socket) {
     model.readForumThread(DUMMY_CLASSROOM, null).then(
         x => {
-            console.log(JSON.stringify(x));
             socket.emit("oldThread", x)
         }
     );
@@ -97,8 +103,13 @@ app.use(function (req, res, next) {
     console.log("user id is: " + req.session.uid);
     next();
 });
-
-
+app.get('/appointmentByOfficeHourId',function (req,res) {
+    console.log(req.query.officeHourId);
+    model.readAppointmentByOfficeHourId(req.query.officeHourId).then(
+        r=>{res.send(r)}
+    )
+})
+//Fetch office hours
 app.get('/fetchAppointments', function (req, res) {
 
     console.log(req.session.uid);
@@ -108,15 +119,43 @@ app.get('/fetchAppointments', function (req, res) {
         model.readAppointmentByStudentId(DUMMY_CLASSROOM,req.session.uid)
     ];
     Promise.all(queries).then(function(values){
-        res.send(JSON.stringify({
+        res.send({
             available:values[0],
             unavailable:values[1],
             myAppointments:values[2],
             uid:req.session.uid
-        }))
+        })
     })
 });
-
+function toSQLTime(date) {
+    return date.getHours()+":"+date.getMinutes()+":00";
+}
+app.post('/changeOfficeHour',function(req,res){
+    console.log(req.body)
+    var uid=req.session.uid;
+    
+    req.body.remove.forEach(e => {
+        model.deleteOfficeHourById(e)
+    });
+    var startTime=new Date()
+    var endTime=new Date()
+    var newOfficeHours=req.body.add.map(e=>{
+        startTime.setTime(e.start)
+        endTime.setTime(e.end)
+        return model.createOfficeHour(uid,DUMMY_CLASSROOM,toSQLTime(startTime),toSQLTime(endTime),startTime.getDay()+1).then(r=>{
+            e.id=r.getAutoIncrementValue()
+            e.tutorId=uid;
+            return e;
+        })
+    })
+    Promise.all(newOfficeHours).then(function (values) {
+        res.send("s");
+        sio.of('/appointments').emit('changeOfficeHour',{
+            removed:req.body.remove,
+            added:values
+        })
+    })
+})
 app.get('/fetchOfficeHours', function (req, res) {
     //TODO: Implement office hour query
 });
@@ -131,6 +170,13 @@ app.get('/addAppointment', function (req, res) {
 
     res.redirect("/tutor-appointment.html");
 });
+
+app.post('/updateAppointment',function (req,res) {
+    console.log(req.body);
+    model.updateAppointmentById(req.body.id,req.body.status,null).then(r=>{
+        res.send("success");
+    })
+})
 
 
 app.post('/googleAuth', login);
@@ -167,6 +213,17 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
     res.redirect("tutor-classroom.html");
 });
 
+app.get('/textSuggest', function (req, res) {
+    const textBody = req.query.textBody;
+    const currentDate = new Date();
+    const textName = "suggestions/suggestion-" + req.session.uid + "-" + currentDate.toISOString().slice(0, 19) + ".txt";
+
+    fs.writeFile(textName, textBody, (err) => {
+        if (err) throw err;
+    });
+
+    res.redirect("setting.html");
+});
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");

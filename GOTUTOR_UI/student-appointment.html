@@ -124,11 +124,28 @@
             });
             calendar.render();
         }
+        function updateOfficeHours(updates) {
+            updates.removed.forEach(function (e) {
+                calendar.getEventById(e).remove()
+            })
+            updates.added.forEach(function (e) {
+                var newEvent=calendar.addEvent({
+                    title:e.tutorId,
+                    id:e.id,
+                    start:e.start,
+                    end:e.end,
+                    available:"yes",
+                    backgroundColor:colorMap.get("yes")
+                })
+            })
+        }
         //controller->view
         //listen for new reservation from other users
         function initPeerListener() {
             socket = io.connect('http://gotutor.com/appointments');
             socket.on('new', markOccupied)
+            socket.on('changeOfficeHour', updateOfficeHours)
+            
         }
         function transformResponse(content) {
             var events=content.available.map(e=>(

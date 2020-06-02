@@ -118,7 +118,7 @@ module.exports.deleteAppointmentById=function (id) {
 
 module.exports.updateAppointmentById=function(id,status,description){
   return db.then(db => { 
-    var query=db.getTable('appointment').update().where('`idappointment`==id').bind('id', id);
+    var query=db.getTable('appointment').update().where('`idappointment`=:id').bind('id', id);
     if (description!=null) {
       query.set('description',description);
     }
@@ -129,7 +129,7 @@ module.exports.updateAppointmentById=function(id,status,description){
 }
 module.exports.readAppointmentByStudentId=function (classroom,user) {
   return db.then(db=>{
-    var query=db.getTable('futureAppointment').select('appointmentId','description','officeHourId');
+    var query=db.getTable('futureAppointment').select('appointmentId','description','officeHourId','status');
     if (user) {
       query=query.where('(studentId=:id OR tutorId=:id) AND classroomId=:cid').bind('id',user)
       console.log("model"+user)
@@ -140,8 +140,19 @@ module.exports.readAppointmentByStudentId=function (classroom,user) {
   }).then(r=>(r.fetchAll().map(e=>({
     id:e[0],
     description:e[1],
-    officeHourId:e[2]
+    officeHourId:e[2],
+    status:e[3]
   }))))
+}
+module.exports.readAppointmentByOfficeHourId=function (ohid) {
+  return db.then(db=>(db.getTable("appointment").select("idappointment","description","status","user_iduser").where('date >= CURDATE() AND officeHour_idofficeHour = :ohid AND status != \'denied\'').bind('ohid',ohid).execute())).then(e=>{
+    e=e.fetchOne()
+    return ({
+    id:e[0],
+    description:e[1],
+    status:e[2],
+    studentId:e[3]
+  })})
 }
 module.exports.readAppointmentByStudentIdDetailed=function (classroom,user,role) {
   return db.then(db=>{

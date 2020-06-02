@@ -22,6 +22,9 @@ const sio = require("socket.io")(httpServer);
 //Database
 const model = require('./model');
 
+//FS
+const fs = require('fs');
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'GOTUTOR_UI/uploads');
@@ -175,15 +178,11 @@ app.get('/textSuggest', function (req, res) {
     const textBody = req.textBody;
     const textName = "suggestion-" + req.session.uid + Date() + ".txt";
 
-    var acknowledgeDiv = document.createElement("div");
-    var acknowledgeText = document.createElement("textarea");
-    acknowledgeText.value = "Thank you for your feedback!";
-    acknowledgeDiv.appendChild(acknowledgeText);
-    setTimeout(() => {
-        acknowledgeDiv.remove();
-    }, 5000);
+    fs.writeFile(textName, textBody, (err) => {
+        if (err) throw err;
+    });
 
-    res.send();
+    res.sendStatus(200);
 });
 
 httpServer.listen(80, function () {

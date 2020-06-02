@@ -26,7 +26,7 @@ module.exports=function (req, res) {
             var UID=payload['email'];
             UID=UID.substr(0,UID.indexOf('@'));
             req.session.uid = UID;
-            model.createUser(UID,'student',DUMMY_CLASSROOM).catch(e=>{});
+            model.createUser(UID,'student',DUMMY_CLASSROOM).catch(e=>{console.log('already exist')});
             req.sessionOptions.maxAge = payload['exp'] * 1e3 - Date.now();
             res.send(JSON.stringify({
                 success: true,

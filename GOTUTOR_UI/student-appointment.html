@@ -4,6 +4,7 @@
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
     <script src="https://apis.google.com/js/platform.js"></script>
+    <script src="auth.js"></script>
     <!-- full Calendar import -->
     <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet'/>
     <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet'/>
@@ -39,24 +40,6 @@
                 }
             }
         }
-
-        function signOut() {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                console.log('User signed out.');
-                document.cookie = "";
-                window.location.replace("login.html")
-            });
-        }
-
-        gapi.load('auth2', function () {
-            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
-                if (!auth2.isSignedIn.get()) {
-                    window.location.replace("login.html")
-                }
-            });
-
-        });
     </script>
     <script>
         //connect web socket for communicating reservation made by this user and other user
@@ -65,24 +48,12 @@
         const colorMap = new Map([["yes", "green"], ["no", "red"], ["me", "blue"]]);
 
         //view->controller
-        function reserveAppointment(officeHourId, question) {
-            socket.emit('reserve', {id: officeHourId, question: question});
+        function reserveAppointment(officeHourId, question,date) {
+            socket.emit('reserve', {id: officeHourId, question: question,date:date});
         }
-
-        //controller->view
-        //listen for new reservation from other users
-        function initPeerListener(calendar) {
-            socket = io.connect('http://gotutor.com');
-            socket.on('new', markOccupied)
+        function translateDate(d) {
+            return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
         }
-
-        //Translate REST API response to the format accepted by full calendar api
-        function transformEvent(info) {
-            //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
-            info.backgroundColor = colorMap.get(info.available);
-            console.log(info)
-        }
-
         //view
         var calendar;
 
@@ -100,7 +71,7 @@
             submit.appendChild(submitText);
             submit.onclick = function () {
                 //tell backend reservation made
-                reserveAppointment(event.id, question.value);
+                reserveAppointment(event.id, question.value,translateDate(event.start));
                 event.setExtendedProp("available", "me");
                 event.setProp("backgroundColor", colorMap.get("me"));
                 //remove the prompt
@@ -128,14 +99,16 @@
             toModify.setExtendedProp("available", "no");
             toModify.setProp("backgroundColor", colorMap.get("no"));
         }
-
-        document.addEventListener('DOMContentLoaded', function () {
+        
+        function initCalendar(events) {
             //The ID of element to put calendar is 'cal'
             var calendarEl = document.getElementById('cal');
-
+            var start=new Date()
+            var end=new Date()
+            end.setDate(end.getDate()+6)
             //Initialize calendar
             calendar = new FullCalendar.Calendar(calendarEl, {
-                events: '/fetchAppointments',
+                events: events,
                 plugins: ['timeGrid'],
                 eventClick: function (eventClickInfo) {
                     if (eventClickInfo.event.extendedProps.available !== "yes") {
@@ -145,17 +118,80 @@
 
                     eventClickInfo.el.appendChild(getNewAppointmentDialog(eventClickInfo.event));
                 },
-
-                eventDataTransform: transformEvent,
-                eventSourceSuccess: initPeerListener(calendar, markOccupied),
-                defaultView: 'timeGridWeek',
+                defaultView: 'timeGrid',
+                visibleRange:{start:start,end:end},
                 header: false
             });
-
-
             calendar.render();
+        }
+        function updateOfficeHours(updates) {
+            updates.removed.forEach(function (e) {
+                calendar.getEventById(e).remove()
+            })
+            updates.added.forEach(function (e) {
+                var newEvent=calendar.addEvent({
+                    title:e.tutorId,
+                    id:e.id,
+                    start:e.start,
+                    end:e.end,
+                    available:"yes",
+                    backgroundColor:colorMap.get("yes")
+                })
+            })
+        }
+        //controller->view
+        //listen for new reservation from other users
+        function initPeerListener() {
+            socket = io.connect('http://gotutor.com/appointments');
+            socket.on('new', markOccupied)
+            socket.on('changeOfficeHour', updateOfficeHours)
+            
+        }
+        function transformResponse(content) {
+            var events=content.available.map(e=>(
+                {
+                    start:e.start*1000,
+                    end:e.end*1000,
+                    title:e.tutor,
+                    id:e.id,
+                    available:"yes",
+                    backgroundColor:colorMap.get("yes")
+                }
+            ))
+            var myAppointments=new Map()
+            content.myAppointments.forEach(e => {
+                myAppointments.set(e.officeHourId,{id:e.id,description:e.description});
+            });
+            content.unavailable.forEach(e=>{
+                e={
+                    start:e.start*1000,
+                    end:e.end*1000,
+                    title:e.tutor,
+                    id:e.id
+                }
+                var appointment=myAppointments.get(e.id)
+                if (appointment){
+                    e.available='me'
+                    e.backgroundColor=colorMap.get("me")
+                    e.appointmentId=appointment.id;
+                    e.appointmentDescription=appointment.description;
+                }else{
+                    e.available='no'
+                    e.backgroundColor=colorMap.get("no")
+                }
+                events.push(e);
+            })
+//            initPeerListener()
+            return events;
+        }
+        
+        var initEvents=fetch("/fetchAppointments").then(res=>res.json()).then(r=>transformResponse(r))
 
-            //setTimeout(()=>{console.log(calendar.getEvents())},1000)
+        document.addEventListener('DOMContentLoaded', function () {
+            initEvents.then(r=>{
+                initCalendar(r);
+                initPeerListener();
+            })
         });
     </script>
 </head>

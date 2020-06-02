@@ -175,15 +175,15 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
 });
 
 app.get('/textSuggest', function (req, res) {
-    const textBody = req.textBody;
+    const textBody = req.query.textBody;
     const currentDate = new Date();
-    const textName = "suggestions/suggestion-" + req.session.uid + "-" + currentDate.toISOString().slice(0, 10) + ".txt";
+    const textName = "suggestions/suggestion-" + req.session.uid + "-" + currentDate.toISOString().slice(0, 19) + ".txt";
 
     fs.writeFile(textName, textBody, (err) => {
         if (err) throw err;
     });
 
-    res.sendStatus(200);
+    res.end();
 });
 
 httpServer.listen(80, function () {

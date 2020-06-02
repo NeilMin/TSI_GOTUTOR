@@ -1,7 +1,7 @@
 //process.env.DEBUG="*";
-
 const login = require('./Login.js');
 const DUMMY_CLASSROOM = "a";
+
 // Cookie
 const cookieSession = require('cookie-session');
 
@@ -21,6 +21,9 @@ const sio = require("socket.io")(httpServer);
 
 //Database
 const model = require('./model');
+
+//FS
+const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -171,6 +174,17 @@ app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
     res.redirect("tutor-classroom.html");
 });
 
+app.get('/textSuggest', function (req, res) {
+    const textBody = req.query.textBody;
+    const currentDate = new Date();
+    const textName = "suggestions/suggestion-" + req.session.uid + "-" + currentDate.toISOString().slice(0, 19) + ".txt";
+
+    fs.writeFile(textName, textBody, (err) => {
+        if (err) throw err;
+    });
+
+    res.redirect("setting.html");
+});
 
 httpServer.listen(80, function () {
     console.log("Listening on port 80");

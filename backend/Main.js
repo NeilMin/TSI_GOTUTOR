@@ -41,7 +41,6 @@ const cookieSessionMiddleware = cookieSession({
     secret: 'devel'
 });
 
-app.use(express.json())
 
 sio.use(function (socket, next) {
     //console.log(socket.request);
@@ -93,13 +92,13 @@ sio.of('/forumReply').on('connection', function (socket) {
         })
     })
 });
-
+app.use('/', express.static('GOTUTOR_UI'));
 
 app.use(cookieSessionMiddleware);
 
 //<li><a href="writeup.html">Assignment</a></li>
 //<li><a href="classroom.html">Classroom</a></li>
-app.get('/*',function (req,res,next) {
+app.use(function (req,res,next) {
     console.log(req.session.role)
     if (req.session.role=="staff") {
         express.static('GOTUTOR_UI/tutorUI')(req,res,next)
@@ -107,13 +106,14 @@ app.get('/*',function (req,res,next) {
         express.static('GOTUTOR_UI/studentUI')(req,res,next)
     }
 })
-app.use('/', express.static('GOTUTOR_UI'));
 
 app.use(function (req, res, next) {
     console.log(req.path + " requested");
     console.log("user id is: " + req.session.uid);
     next();
 });
+app.use(express.json())
+
 app.get('/appointmentByOfficeHourId',function (req,res) {
     console.log(req.query.officeHourId);
     model.readAppointmentByOfficeHourId(req.query.officeHourId).then(
@@ -167,6 +167,7 @@ app.post('/changeOfficeHour',function(req,res){
         })
     })
 })
+/* Already implemented via socket appointment and office hour are together
 app.get('/fetchOfficeHours', function (req, res) {
     //TODO: Implement office hour query
 });
@@ -181,7 +182,7 @@ app.get('/addAppointment', function (req, res) {
 
     res.redirect("/tutor-appointment.html");
 });
-
+*/
 app.post('/updateAppointment',function (req,res) {
     console.log(req.body);
     model.updateAppointmentById(req.body.id,req.body.status,null).then(r=>{
@@ -195,7 +196,7 @@ app.post('/googleAuth', login);
 app.get('/testUser', function (req, res) {
     req.session.uid = req.query.user;
     model.createUser(req.query.user,'student',DUMMY_CLASSROOM).catch(e=>{console.log('already exist')});
-    res.redirect("/forum.html");
+    res.redirect("/testLanding.html");
 });
 
 
@@ -214,8 +215,8 @@ app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
 
 app.post('/alterTutor', upload.single('students.xlsx'), (req, res, next) => {
     console.log(req.body);
-    req.body.forEach(u => {
         model.updateUser(null,'student',DUMMY_CLASSROOM).then(function(){
+        req.body.forEach(u => {
         model.createUser(u,'staff',DUMMY_CLASSROOM).catch(function () {
             model.updateUser(u,'staff',DUMMY_CLASSROOM);
         })

@@ -9,32 +9,6 @@
     <script type="module" src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <script src="thread.js"></script>
-    <!--TODO: Export this as a POST for better design-->
-    <script>
-        function navigate(toNavigate) {
-            const isTutor = sessionStorage.getItem("isTutor") === "true";
-
-            if (toNavigate === 'assignment') {
-                if (isTutor) {
-                    window.location.replace("tutor-writeup.html");
-                } else {
-                    window.location.replace("student-writeup.html");
-                }
-            } else if (toNavigate === 'classroom') {
-                if (isTutor) {
-                    window.location.replace("tutor-classroom.html");
-                } else {
-                    window.location.replace("student-classroom.html");
-                }
-            } else if (toNavigate === 'appointment') {
-                if (isTutor) {
-                    window.location.replace("tutor-appointment.html");
-                } else {
-                    window.location.replace("student-appointment.html");
-                }
-            }
-        }
-    </script>
 </head>
 
 <body>

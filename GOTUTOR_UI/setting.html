@@ -11,49 +11,8 @@
     </style>
     <script src="https://apis.google.com/js/platform.js"></script>
     <!--TODO: Export this as a POST for better design-->
-    <script>
-        function navigate(toNavigate) {
-            const isTutor = sessionStorage.getItem("isTutor") === "true";
+    <script src="auth.js"></script>
 
-            if (toNavigate === 'assignment') {
-                if (isTutor) {
-                    window.location.replace("tutor-writeup.html");
-                } else {
-                    window.location.replace("student-writeup.html");
-                }
-            } else if (toNavigate === 'classroom') {
-                if (isTutor) {
-                    window.location.replace("tutor-classroom.html");
-                } else {
-                    window.location.replace("student-classroom.html");
-                }
-            } else if (toNavigate === 'appointment') {
-                if (isTutor) {
-                    window.location.replace("tutor-appointment.html");
-                } else {
-                    window.location.replace("student-appointment.html");
-                }
-            }
-        }
-
-        function signOut() {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                console.log('User signed out.');
-                document.cookie = "";
-                window.location.replace("login.html")
-            });
-        }
-
-        gapi.load('auth2', function () {
-            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
-                if (!auth2.isSignedIn.get()) {
-                    window.location.replace("login.html")
-                }
-            });
-
-        });
-    </script>
 </head>
 
 <body>
@@ -63,9 +22,9 @@
             <img src="images/GoTutor.png" alt="logo" class="logo">
             <!--TODO: Classroom navigation-->
             <ul class="navigation">
-                <li><a onclick="navigate('assignment');">Assignment</a></li>
-                <li><a onclick="navigate('classroom');">Classroom</a></li>
-                <li><a onclick="navigate('appointment');">Appointments</a></li>
+                <li><a href="writeup.html">Assignment</a></li>
+                <li><a href="classroom.html">Classroom</a></li>
+                <li><a href="appointment.html">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li style="color: #F3E500;">Settings</li>

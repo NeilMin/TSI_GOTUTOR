@@ -16,34 +16,8 @@
     <script src="https://unpkg.com/@fullcalendar/interaction@4.4.0/main.js"></script>
     <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
-    <script src="auth.js"/>
-    <!--TODO: Export this as a POST for better design-->
-    <script>
-        function navigate(toNavigate) {
-            const isTutor = sessionStorage.getItem("isTutor") === "true";
-
-            if (toNavigate === 'assignment') {
-                if (isTutor) {
-                    window.location.replace("tutor-writeup.html");
-                } else {
-                    window.location.replace("student-writeup.html");
-                }
-            } else if (toNavigate === 'classroom') {
-                if (isTutor) {
-                    window.location.replace("tutor-classroom.html");
-                } else {
-                    window.location.replace("student-classroom.html");
-                }
-            } else if (toNavigate === 'appointment') {
-                if (isTutor) {
-                    window.location.replace("tutor-appointment.html");
-                } else {
-                    window.location.replace("student-appointment.html");
-                }
-            }
-        }
-
-    </script>
+    <script src="auth.js"></script>
+  
     <script>
         //connect web socket for communicating reservation made by this user and other user
         var socket;

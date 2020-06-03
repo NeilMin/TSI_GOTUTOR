@@ -26,12 +26,19 @@ module.exports=function (req, res) {
             var UID=payload['email'];
             UID=UID.substr(0,UID.indexOf('@'));
             req.session.uid = UID;
+            var userRole=model.readClassroomByUser(UID).then(r=>{
+                if (r.length===0) {
+                    req.session.role = 'student';
+                }else{
+                    req.session.role=r[0].role;
+                }
+            })
             model.createUser(UID,'student',DUMMY_CLASSROOM).catch(e=>{console.log('already exist')});
             req.sessionOptions.maxAge = payload['exp'] * 1e3 - Date.now();
-            res.send(JSON.stringify({
+            userRole.then(function(){res.send(JSON.stringify({
                 success: true,
                 userInfos: (({name, email, picture}) => ({name, email, picture}))(payload)
-            }));
+            }));})
         } catch (error) {
             console.log(error);
             res.send(JSON.stringify({success: false, failedReason: error}));

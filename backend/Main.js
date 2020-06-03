@@ -94,9 +94,20 @@ sio.of('/forumReply').on('connection', function (socket) {
     })
 });
 
-app.use('/', express.static('GOTUTOR_UI'));
 
 app.use(cookieSessionMiddleware);
+
+//<li><a href="writeup.html">Assignment</a></li>
+//<li><a href="classroom.html">Classroom</a></li>
+app.get('/*',function (req,res,next) {
+    console.log(req.session.role)
+    if (req.session.role=="staff") {
+        express.static('GOTUTOR_UI/tutorUI')(req,res,next)
+    }else{
+        express.static('GOTUTOR_UI/studentUI')(req,res,next)
+    }
+})
+app.use('/', express.static('GOTUTOR_UI'));
 
 app.use(function (req, res, next) {
     console.log(req.path + " requested");
@@ -201,16 +212,16 @@ app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
 });
 
 
-app.post('/uploadTable', upload.single('students.xlsx'), (req, res, next) => {
-    const file = req.file;
-
-    if (!file) {
-        const error = new Error('Please upload a file');
-        error.httpStatusCode = 400;
-        return next(error)
-    }
-
-    res.redirect("tutor-classroom.html");
+app.post('/alterTutor', upload.single('students.xlsx'), (req, res, next) => {
+    console.log(req.body);
+    req.body.forEach(u => {
+        model.updateUser(null,'student',DUMMY_CLASSROOM).then(function(){
+        model.createUser(u,'staff',DUMMY_CLASSROOM).catch(function () {
+            model.updateUser(u,'staff',DUMMY_CLASSROOM);
+        })
+    })
+    });
+    res.send("");
 });
 
 app.get('/textSuggest', function (req, res) {

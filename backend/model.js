@@ -20,6 +20,18 @@ module.exports.createUser = function (user, role, classroom) {
   return db.then(db => { return db.getTable('user').insert('iduser', 'user_type', 'classroom_idclassroom').values(user, role, classroom).execute(); });
 };
 
+module.exports.updateUser = function (user, role, classroom) {
+  return db.then(db => {
+    var query= db.getTable('user').update().set('user_type',role);
+    if (user) {
+      query=query.where('iduser=:uid').bind('uid',user)
+    }else{
+      query=query.where('true')
+    }
+    return query.execute(); 
+  });
+};
+
 module.exports.readUserByClassroom = function (classroom) {
   return db.then(db => { return db.getTable('user').select('iduser', 'user_type').where('classroom_idclassroom=:cid').bind('cid', classroom).execute() }).then(r => (r.fetchAll().map(x => { return ({ userId: x[0], role: x[1] }) })))
 };

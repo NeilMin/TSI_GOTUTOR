@@ -4,16 +4,6 @@
     <link href="styles.css" rel="stylesheet">
     <title>GoTutor!</title>
     <script src="https://apis.google.com/js/platform.js"></script>
-    <!-- full Calendar import -->
-    <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet'/>
-    <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet'/>
-    <link href='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.css' rel='stylesheet'/>
-    <script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.js'></script>
-    <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.js'></script>
-    <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.js'></script>
-
-    <!-- socket.io imports -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
     <!--TODO: Export this as a POST for better design-->
     <script>
         function navigate(toNavigate) {
@@ -60,37 +50,6 @@
     </script>
 </head>
 
-
-<script>
-    var socket;
-    //Translate REST API response to the format accepted by full calendar api
-    function transformEvent(info) {
-        //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
-        info.backgroundColor = colorMap.get(info.available);
-        console.log(info)
-    }
-
-    //view
-    var calendar;
-
-    document.addEventListener('DOMContentLoaded', function () {
-        //The ID of element to put calendar is 'cal'
-        var calendarEl = document.getElementById('cal');
-
-        //Initialize calendar
-        calendar = new FullCalendar.Calendar(calendarEl, {
-            events: '/fetchOfficeHours',
-            plugins: ['timeGrid'],
-            eventDataTransform: transformEvent,
-            //eventSourceSuccess: initPeerListener(calendar, markOccupied),
-            defaultView: 'timeGridWeek',
-            header: false
-        });
-
-        calendar.render();
-    });
-</script>
-
 <body>
 <div class="bg-main">
     <div class="container">
@@ -98,9 +57,9 @@
             <img src="images/GoTutor.png" alt="logo" class="logo">
             <!--TODO: Classroom navigation-->
             <ul class="navigation">
-                <li><a onclick="navigate('assignment');">Assignment</a></li>
-                <li style="color: #F3E500;">Classroom</li>
-                <li><a onclick="navigate('appointment');">Appointments</a></li>
+                <li><a href="writeup.html">Assignment</a></li>
+                <li><a href="classroom.html">Classroom</a></li>
+                <li><a href="appointment.html">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li><a href="tutor.html">Tutors</a></li>
                 <li><a href="setting.html">Settings</a></li>
@@ -109,9 +68,12 @@
             </ul>
         </nav>
         <div class="content">
-            <h1>Classroom Office Hours</h1>
-            <div id="cal"></div>
+            <div class="writeup">
+                <h1>Current assignment</h1>
+                <iframe src="uploads/writeup.pdf" style="width: 100%;height: 800px;border: none;"></iframe>
+            </div>
         </div>
     </div>
 </div>
 </body>
+</html>

@@ -29,11 +29,7 @@
                             sessionStorage.setItem("isTutor", "false");
                         }
 
-                        if (sessionStorage.getItem("isTutor") === "true") {
-                            window.location.replace("tutor-appointment.html");
-                        } else {
-                            window.location.replace("student-appointment.html");
-                        }
+                            window.location.replace("appointment.html");
                     } else {
                         document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;
                     }

@@ -23,11 +23,14 @@
         const colorMap = new Map([["yes", "green"], ["no", "red"], ["me", "blue"]]);
 
         //view->controller
-        function reserveAppointment(officeHourId, question,date) {
-            socket.emit('reserve', {id: officeHourId, question: question,date:date});
+        function reserveAppointment(officeHourId, question,date,cb) {
+            socket.emit('reserve', {id: officeHourId, question: question,date:date},cb);
         }
         function translateDate(d) {
             return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+        }
+        function deleteAppointment(appointmentId){
+            socket.emit('delete', appointmentId);
         }
         //view
         var calendar;
@@ -46,17 +49,16 @@
             submit.appendChild(submitText);
             submit.onclick = function () {
                 //tell backend reservation made
-                reserveAppointment(event.id, question.value,translateDate(event.start));
+                reserveAppointment(event.id, question.value,translateDate(event.start),function (res) {
+                    event.setExtendedProp("appointmentId",res);
+                });
                 event.setExtendedProp("available", "me");
+                event.setExtendedProp("appointmentDescription",question.value)
                 event.setProp("backgroundColor", colorMap.get("me"));
                 //remove the prompt
                 prompt.remove()
             };
             prompt.appendChild(submit);
-            //Prevent repetitive attachment of frames
-            prompt.onclick = function (e) {
-                e.stopPropagation();
-            };
             return prompt;
         }
 
@@ -69,6 +71,23 @@
             return message;
         }
 
+        function showDescriptionDialog(event){
+            var message = document.createElement("div");
+            var description=document.createElement("p")
+            description.textContent = event.extendedProps.appointmentDescription;
+            message.appendChild(description);
+            var deleteAppointmentbtn=document.createElement("button");
+            deleteAppointmentbtn.textContent="Delete this Appointment"
+            deleteAppointmentbtn.onclick=function(){
+                deleteAppointment(event.extendedProps.appointmentId)
+            };
+            message.appendChild(deleteAppointmentbtn);
+            setTimeout(() => {
+                message.remove();
+            }, 5000);
+            return message;
+        }
+        
         function markOccupied(officeHourId) {
             var toModify = calendar.getEventById(officeHourId);
             toModify.setExtendedProp("available", "no");
@@ -86,12 +105,23 @@
                 events: events,
                 plugins: ['timeGrid'],
                 eventClick: function (eventClickInfo) {
-                    if (eventClickInfo.event.extendedProps.available !== "yes") {
-                        eventClickInfo.el.appendChild(getOccupiedDialog());
-                        return;
+                    var dialog;
+                    switch (eventClickInfo.event.extendedProps.available) {
+                        case "yes":
+                            dialog=getNewAppointmentDialog(eventClickInfo.event);
+                            break;
+                        case "no":
+                            dialog=getOccupiedDialog();
+                            break;
+                        case "me":
+                            dialog=showDescriptionDialog(eventClickInfo.event);
+                            break;
                     }
-
-                    eventClickInfo.el.appendChild(getNewAppointmentDialog(eventClickInfo.event));
+                    //Prevent repetitive attachment of frames
+                    dialog.onclick = function (e) {
+                        e.stopPropagation();
+                    };
+                    eventClickInfo.el.appendChild(dialog);
                 },
                 defaultView: 'timeGrid',
                 visibleRange:{start:start,end:end},

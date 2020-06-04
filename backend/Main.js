@@ -49,12 +49,16 @@ sio.use(function (socket, next) {
 
 sio.of('/appointments').on("connection", function (socket) {
     //make appointment
-    socket.on("reserve", (data) => {
+    socket.on("reserve", (data,res) => {
         //add Appointment
         console.log(data);
-        model.createAppointment(data.question,data.date,socket.request.session.uid,data.id)
+        model.createAppointment(data.question,data.date,socket.request.session.uid,data.id).then(r=>{res(r.getAutoIncrementValue())})
         console.log("from " + socket.request.session.uid);
         socket.broadcast.emit('new', data.id);
+    })
+    socket.on("delete",(data)=>{
+        console.log(data);
+        model.deleteAppointmentById(data);
     })
 });
 

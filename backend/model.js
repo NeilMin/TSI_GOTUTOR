@@ -125,7 +125,7 @@ module.exports.createAppointment = function (description, date, studentId, offic
 };
 
 module.exports.deleteAppointmentById=function (id) {
-  return db.then(db=>(db.getTable('appointment').delete().where('id=:id').bind('id',id).execute()))
+  return db.then(db=>(db.getTable('appointment').delete().where('idappointment=:id').bind('id',id).execute()))
 };
 
 module.exports.updateAppointmentById=function(id,status,description){

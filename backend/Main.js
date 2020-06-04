@@ -59,6 +59,7 @@ sio.of('/appointments').on("connection", function (socket) {
     socket.on("delete",(data)=>{
         console.log(data);
         model.deleteAppointmentById(data);
+        
     })
 });
 

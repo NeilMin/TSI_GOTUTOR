@@ -126,6 +126,11 @@ app.get('/appointmentByOfficeHourId',function (req,res) {
         r=>{res.send(r)}
     )
 })
+
+app.get('/isTutor',function (req,res) {
+    res.send(req.session.role)
+})
+
 //Fetch office hours
 app.get('/fetchAppointments', function (req, res) {
 

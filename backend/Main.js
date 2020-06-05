@@ -1,4 +1,4 @@
-process.env.DEBUG="cookie-session";
+process.env.DEBUG="cookie-session,socket*";
 const login = require('./Login.js');
 const DUMMY_CLASSROOM = "a";
 
@@ -191,10 +191,10 @@ app.get('/addAppointment', function (req, res) {
 */
 app.post('/updateAppointment',function (req,res) {
     console.log(req.body);
+    sio.of('/appointments').emit(req.body.status=="approved"?"approved":"release",req.body.officeHourId);
     model.updateAppointmentById(req.body.id,req.body.status,null).then(r=>{
         res.send("success");
     })
-    sio.of('/appointment').emit(req.body.status=="approved"?"approved":"release",req.body.officeHourId);
 })
 
 

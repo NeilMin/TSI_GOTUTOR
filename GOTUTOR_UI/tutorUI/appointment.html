@@ -175,7 +175,7 @@
 
         function markAvailable(id) {
             var toModify = calendar.getEventById(id);
-            toModify.setExtendedProp("available", toModify.extendedProps.title === uid ? "yes-me" : "yes");
+            toModify.setExtendedProp("available", toModify.title === uid ? "yes-me" : "yes");
             setColor(toModify);
         }
 
@@ -225,6 +225,9 @@
                 header: false,
                 eventClick: function (eventClickInfo) {
                     var popup;
+                    if (eventClickInfo.el.lastElementChild.classList.contains("popup")) {
+                        return
+                    }
                     switch (eventClickInfo.event.extendedProps.available) {
                         case "pending":
                             popup = appointmentManagement(eventClickInfo.event);
@@ -244,6 +247,7 @@
                     popup.onclick = function (e) {
                         e.stopPropagation();
                     };
+                    popup.classList.add("popup")
                     eventClickInfo.el.appendChild(popup);
                 }
             });

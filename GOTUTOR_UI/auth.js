@@ -5,7 +5,7 @@ function signOut() {
         document.cookie = "";
         sessionStorage.clear()
         localStorage.clear()
-        window.location.replace("login.html")
+        window.location.replace("/login.html")
     });
 }
 

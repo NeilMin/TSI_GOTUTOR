@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <form className="newReply" onSubmit={this.handleReplyInput}>
                     <label>New Reply</label>
                     <input type="text" value={this.state.newReplyVal} onChange={this.handleReplyInputChange}/>
-                    <input type="submit" value="Post reply." className="buttons"/>
+                    <input type="submit" value="Post reply" className="buttons"/>
                 </form>
             </div>)
         }

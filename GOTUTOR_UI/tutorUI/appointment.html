@@ -217,6 +217,9 @@
                 header: false,
                 eventClick: function (eventClickInfo) {
                     var popup;
+                    if (eventClickInfo.el.lastElementChild.classList.contains("popup")) {
+                        return
+                    }
                     switch (eventClickInfo.event.extendedProps.available) {
                         case "pending":
                             popup=appointmentManagement(eventClickInfo.event)
@@ -236,6 +239,7 @@
                     popup.onclick = function (e) {
                         e.stopPropagation();
                     };
+                    popup.classList.add("popup")
                     eventClickInfo.el.appendChild(popup);
                 }
             });

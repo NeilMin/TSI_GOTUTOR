@@ -123,6 +123,9 @@
                 plugins: ['timeGrid'],
                 eventClick: function (eventClickInfo) {
                     var dialog;
+                    if (eventClickInfo.el.lastElementChild.classList.contains("popup")) {
+                        return
+                    }
                     switch (eventClickInfo.event.extendedProps.available) {
                         case "yes":
                             dialog=getNewAppointmentDialog(eventClickInfo.event);
@@ -138,6 +141,7 @@
                     dialog.onclick = function (e) {
                         e.stopPropagation();
                     };
+                    popup.classList.add("popup")
                     eventClickInfo.el.appendChild(dialog);
                 },
                 defaultView: 'timeGrid',

@@ -168,7 +168,7 @@
         }
         function markAvailable(id) {
             var toModify=calendar.getEventById(id);
-            toModify.setExtendedProp("available",toModify.extendedProps.title==uid?"yes-me":"yes");
+            toModify.setExtendedProp("available",toModify.title==uid?"yes-me":"yes");
             setColor(toModify);
         }
         function handleEventDrag(eventDropInfo){

@@ -263,7 +263,7 @@
             socket = io.connect('http://gotutor.com/appointments');
             socket.on('new', markOccupied)
             socket.on('changeOfficeHour', updateOfficeHours)
-            socket.on('available',markAvailable)
+            socket.on('release',markAvailable)
         }
         
         function transformResponse(content) {

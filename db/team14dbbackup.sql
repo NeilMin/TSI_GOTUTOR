@@ -249,7 +249,7 @@ LOCK TABLES `user` WRITE;
 UNLOCK TABLES;
 
 CREATE USER IF NOT EXISTS 'team14dbUser' IDENTIFIED BY 'team14TSIdb@user';
-GRANT SELECT,INSERT,UPDATE ON * TO `team14dbUser`;
+GRANT SELECT,INSERT,UPDATE,DELETE ON * TO `team14dbUser`;
 
 CREATE OR REPLACE VIEW availableOfficeHour AS SELECT UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_start)) AS time_start, UNIX_TIMESTAMP(ADDTIME(DATE_ADD(CURDATE(),INTERVAL (day_of_week-DAYOFWEEK(CURDATE())+7)MOD 7 DAY),time_end)) AS time_end,user_iduser,classroom_idclassroom,idofficeHour FROM officeHour WHERE `in effect`=1 AND idofficeHour NOT IN (SELECT officeHour_idofficeHour  FROM appointment WHERE date>=CURDATE() AND status != 'denied');
 

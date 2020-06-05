@@ -5,49 +5,7 @@
     <title>GoTutor!</title>
     <script src="https://apis.google.com/js/platform.js"></script>
     <!--TODO: Export this as a POST for better design-->
-    <script>
-        function navigate(toNavigate) {
-            const isTutor = sessionStorage.getItem("isTutor") === "true";
-
-            if (toNavigate === 'assignment') {
-                if (isTutor) {
-                    window.location.replace("tutor-writeup.html");
-                } else {
-                    window.location.replace("student-writeup.html");
-                }
-            } else if (toNavigate === 'classroom') {
-                if (isTutor) {
-                    window.location.replace("tutor-classroom.html");
-                } else {
-                    window.location.replace("student-classroom.html");
-                }
-            } else if (toNavigate === 'appointment') {
-                if (isTutor) {
-                    window.location.replace("tutor-appointment.html");
-                } else {
-                    window.location.replace("student-appointment.html");
-                }
-            }
-        }
-
-        function signOut() {
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                console.log('User signed out.');
-                document.cookie = "";
-                window.location.replace("login.html")
-            });
-        }
-
-        gapi.load('auth2', function () {
-            var auth2 = gapi.auth2.init({client_id: "294184945438-qev9i7spuki27vk7lo7vs2cjpppi3rk9.apps.googleusercontent.com"}).then(function (auth2) {
-                if (!auth2.isSignedIn.get()) {
-                    window.location.replace("login.html")
-                }
-            });
-
-        });
-    </script>
+    <script src="auth.js"></script>
 </head>
 
 <body>
@@ -57,9 +15,9 @@
             <img src="images/GoTutor.png" alt="logo" class="logo">
             <!--TODO: Classroom navigation-->
             <ul class="navigation">
-                <li><a onclick="navigate('assignment');">Assignment</a></li>
-                <li><a onclick="navigate('classroom');">Classroom</a></li>
-                <li><a onclick="navigate('appointment');">Appointments</a></li>
+                <li><a href="tutorUI/writeup.html">Assignment</a></li>
+                <li><a href="tutorUI/classroom.html">Classroom</a></li>
+                <li><a href="tutorUI/appointment.html">Appointments</a></li>
                 <li><a href="forum.html">Forum</a></li>
                 <li style="color: #F3E500;">Tutors</li>
                 <li><a href="setting.html">Settings</a></li>
@@ -68,96 +26,8 @@
             </ul>
         </nav>
         <div class="content">
-            <div class="student">
-                <div class="section_title">Section for student:</div>
-                <br/>
-                <form id="selectTutor">
-                    <label>Select a tutor</label>
-                    <select id="tutorNametList">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <button id="select" class="buttons">Select</button>
-                </form>
-                <table id="tutorProfile">
-                    Selected tutor profile
-                    <tr>
-                        <th>Tutor name</th>
-                        <th>Tutor style</th>
-                        <th>TO DO</th>
-                        <th>TO DO</th>
-                    </tr>
-                    <tr>
-                        <td>Smith</td>
-                        <td>TO DO</td>
-                        <td>TO DO</td>
-                        <td>TO DO</td>
-                    </tr>
-                </table>
-            </div>
-            <br/>
-            <div class="tutor">
-                <div class="section_title">Section for tutor:</div>
-                <br/>
-                <table id="tutorProfile">
-                    Current tutor profile
-                    <tr>
-                        <th>Tutor name</th>
-                        <th>Tutor style</th>
-                        <th>TO DO</th>
-                        <th>TO DO</th>
-                    </tr>
-                    <tr>
-                        <td>Smith</td>
-                        <td>TO DO</td>
-                        <td>TO DO</td>
-                        <td>TO DO</td>
-                    </tr>
-                </table>
-                <br/>
-                <form id="editTutorProfile">
-                    <label>Edit tutor profile</label>
-                    <br/>
-                    <label>Select a characteristic</label>
-                    <select id="characterList">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <label>Fill out information</label>
-                    <input type="text" size="100"/>
-                    <button id="save" class="buttons">Save</button>
-                </form>
-                <br/>
-                <form id="selectTutor">
-                    <label>Select a tutor</label>
-                    <select id="tutorNametList">
-                        <option value="1">one</option>
-                        <option value="2">two</option>
-                        <option value="3">three</option>
-                        <option value="4">four</option>
-                    </select>
-                    <button id="select" class="buttons">Select</button>
-                </form>
-                <table id="tutorProfile">
-                    Selected tutor profile
-                    <tr>
-                        <th>Tutor name</th>
-                        <th>Tutor style</th>
-                        <th>TO DO</th>
-                        <th>TO DO</th>
-                    </tr>
-                    <tr>
-                        <td>Smith</td>
-                        <td>TO DO</td>
-                        <td>TO DO</td>
-                        <td>TO DO</td>
-                    </tr>
-                </table>
-            </div>
+            <h1>Tutor List</h1>
         </div>
     </div>
+</div>
 </body>

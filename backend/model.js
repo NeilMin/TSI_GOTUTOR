@@ -125,7 +125,7 @@ module.exports.createAppointment = function (description, date, studentId, offic
 };
 
 module.exports.deleteAppointmentById=function (id) {
-  return db.then(db=>(db.getTable('appointment').delete().where('id=:id').bind('id',id).execute()))
+  return db.then(db=>(db.getTable('appointment').delete().where('idappointment=:id').bind('id',id).execute()))
 };
 
 module.exports.updateAppointmentById=function(id,status,description){
@@ -198,7 +198,7 @@ module.exports.updateForumThread=function (title,paragraph,userId,classroomId) {
 
 module.exports.readForumThread=function(classroom, userId) {
   return db.then(db => {
-    var query = db.getTable('forumThread').select('title','paragraph','user_iduser','idforumThread');
+    var query = db.getTable('forumThread').select('title','paragraph','user_iduser','idforumThread').orderBy('idforumThread desc');
     return filter(query,classroom,userId).execute()
   }).then(r => (
     r.fetchAll().map(x => ({
@@ -221,7 +221,7 @@ module.exports.createForumReply=function (reply,thread,user) {
 
 
 module.exports.readForumRepliesByThreadId=function (tid) {
-  return db.then(db=>(db.getTable('forumReply').select('idforumReply','reply','user_iduser').where('forumThread_idforumThread=:tid').bind('tid',tid).execute())).then(r=>(r.fetchAll().map(x=>({
+  return db.then(db=>(db.getTable('forumReply').select('idforumReply','reply','user_iduser').where('forumThread_idforumThread=:tid').bind('tid',tid).orderBy('idforumReply desc').execute())).then(r=>(r.fetchAll().map(x=>({
     id:x[0],
     reply:x[1],
     userId:x[2]

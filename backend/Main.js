@@ -1,4 +1,4 @@
-process.env.DEBUG="cookie-session";
+process.env.DEBUG = "cookie-session,socket*";
 const login = require('./Login.js');
 const DUMMY_CLASSROOM = "a";
 
@@ -49,12 +49,20 @@ sio.use(function (socket, next) {
 
 sio.of('/appointments').on("connection", function (socket) {
     //make appointment
-    socket.on("reserve", (data) => {
+    socket.on("reserve", (data, res) => {
         //add Appointment
         console.log(data);
-        model.createAppointment(data.question,data.date,socket.request.session.uid,data.id)
+        model.createAppointment(data.question, data.date, socket.request.session.uid, data.id).then(r => {
+            console.log("inc" + r.getAutoIncrementValue())
+            res(r.getAutoIncrementValue())
+        })
         console.log("from " + socket.request.session.uid);
         socket.broadcast.emit('new', data.id);
+    })
+    socket.on("delete", (data) => {
+        console.log(data);
+        model.deleteAppointmentById(data.appointmentId);
+        socket.broadcast.emit("release", data.officeHourId);
     })
 });
 
@@ -96,14 +104,12 @@ app.use('/', express.static('GOTUTOR_UI'));
 
 app.use(cookieSessionMiddleware);
 
-//<li><a href="writeup.html">Assignment</a></li>
-//<li><a href="classroom.html">Classroom</a></li>
-app.use(function (req,res,next) {
+app.use(function (req, res, next) {
     console.log(req.session.role)
-    if (req.session.role=="staff") {
-        express.static('GOTUTOR_UI/tutorUI')(req,res,next)
-    }else{
-        express.static('GOTUTOR_UI/studentUI')(req,res,next)
+    if (req.session.role == "staff") {
+        express.static('GOTUTOR_UI/tutorUI')(req, res, next)
+    } else {
+        express.static('GOTUTOR_UI/studentUI')(req, res, next)
     }
 })
 
@@ -114,56 +120,65 @@ app.use(function (req, res, next) {
 });
 app.use(express.json())
 
-app.get('/appointmentByOfficeHourId',function (req,res) {
+app.get('/appointmentByOfficeHourId', function (req, res) {
     console.log(req.query.officeHourId);
     model.readAppointmentByOfficeHourId(req.query.officeHourId).then(
-        r=>{res.send(r)}
+        r => {
+            res.send(r)
+        }
     )
 })
+
+app.get('/isTutor', function (req, res) {
+    res.send(req.session.role)
+})
+
 //Fetch office hours
 app.get('/fetchAppointments', function (req, res) {
 
     console.log(req.session.uid);
-    var queries=[
-        model.readAvailableOfficeHour(DUMMY_CLASSROOM,null),
-        model.readUnavailableOfficeHour(DUMMY_CLASSROOM,null),
-        model.readAppointmentByStudentId(DUMMY_CLASSROOM,req.session.uid)
+    var queries = [
+        model.readAvailableOfficeHour(DUMMY_CLASSROOM, null),
+        model.readUnavailableOfficeHour(DUMMY_CLASSROOM, null),
+        model.readAppointmentByStudentId(DUMMY_CLASSROOM, req.session.uid)
     ];
-    Promise.all(queries).then(function(values){
+    Promise.all(queries).then(function (values) {
         res.send({
-            available:values[0],
-            unavailable:values[1],
-            myAppointments:values[2],
-            uid:req.session.uid
+            available: values[0],
+            unavailable: values[1],
+            myAppointments: values[2],
+            uid: req.session.uid
         })
     })
 });
+
 function toSQLTime(date) {
-    return date.getHours()+":"+date.getMinutes()+":00";
+    return date.getHours() + ":" + date.getMinutes() + ":00";
 }
-app.post('/changeOfficeHour',function(req,res){
+
+app.post('/changeOfficeHour', function (req, res) {
     console.log(req.body)
-    var uid=req.session.uid;
-    
+    var uid = req.session.uid;
+
     req.body.remove.forEach(e => {
         model.deleteOfficeHourById(e)
     });
-    var startTime=new Date()
-    var endTime=new Date()
-    var newOfficeHours=req.body.add.map(e=>{
+    var startTime = new Date()
+    var endTime = new Date()
+    var newOfficeHours = req.body.add.map(e => {
         startTime.setTime(e.start)
         endTime.setTime(e.end)
-        return model.createOfficeHour(uid,DUMMY_CLASSROOM,toSQLTime(startTime),toSQLTime(endTime),startTime.getDay()+1).then(r=>{
-            e.id=r.getAutoIncrementValue()
-            e.tutorId=uid;
+        return model.createOfficeHour(uid, DUMMY_CLASSROOM, toSQLTime(startTime), toSQLTime(endTime), startTime.getDay() + 1).then(r => {
+            e.id = r.getAutoIncrementValue()
+            e.tutorId = uid;
             return e;
         })
     })
     Promise.all(newOfficeHours).then(function (values) {
         res.send("s");
-        sio.of('/appointments').emit('changeOfficeHour',{
-            removed:req.body.remove,
-            added:values
+        sio.of('/appointments').emit('changeOfficeHour', {
+            removed: req.body.remove,
+            added: values
         })
     })
 })
@@ -183,9 +198,10 @@ app.get('/addAppointment', function (req, res) {
     res.redirect("/tutor-appointment.html");
 });
 */
-app.post('/updateAppointment',function (req,res) {
+app.post('/updateAppointment', function (req, res) {
     console.log(req.body);
-    model.updateAppointmentById(req.body.id,req.body.status,null).then(r=>{
+    sio.of('/appointments').emit(req.body.status === "approved" ? "approved" : "release", req.body.officeHourId);
+    model.updateAppointmentById(req.body.id, req.body.status, null).then(r => {
         res.send("success");
     })
 })
@@ -195,7 +211,9 @@ app.post('/googleAuth', login);
 
 app.get('/testUser', function (req, res) {
     req.session.uid = req.query.user;
-    model.createUser(req.query.user,'student',DUMMY_CLASSROOM).catch(e=>{console.log('already exist')});
+    model.createUser(req.query.user, 'student', DUMMY_CLASSROOM).catch(e => {
+        console.log('already exist')
+    });
     res.redirect("/testLanding.html");
 });
 
@@ -215,12 +233,12 @@ app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
 
 app.post('/alterTutor', upload.single('students.xlsx'), (req, res, next) => {
     console.log(req.body);
-        model.updateUser(null,'student',DUMMY_CLASSROOM).then(function(){
+    model.updateUser(null, 'student', DUMMY_CLASSROOM).then(function () {
         req.body.forEach(u => {
-        model.createUser(u,'staff',DUMMY_CLASSROOM).catch(function () {
-            model.updateUser(u,'staff',DUMMY_CLASSROOM);
+            model.createUser(u, 'staff', DUMMY_CLASSROOM).catch(function () {
+                model.updateUser(u, 'staff', DUMMY_CLASSROOM);
+            })
         })
-    })
     });
     res.send("");
 });

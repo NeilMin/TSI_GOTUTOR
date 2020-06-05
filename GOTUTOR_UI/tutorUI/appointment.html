@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="en">
 <head>
-    <link href="styles.css" rel="stylesheet">
-    <link href="test.css" rel="stylesheet">
+    <link href="../styles.css" rel="stylesheet">
     <title>GoTutor!</title>
     <script src="https://apis.google.com/js/platform.js"></script>
+    <script src="../auth.js"></script>
 
     <!-- full Calendar import -->
     <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet'/>
@@ -16,300 +16,322 @@
     <script src="https://unpkg.com/@fullcalendar/interaction@4.4.0/main.js"></script>
     <!-- socket.io imports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
-    <script src="auth.js"></script>
-  
+
     <script>
         //connect web socket for communicating reservation made by this user and other user
         var socket;
-        var uid
-        
+        var uid;
+
         //mapping time slot status to color
-        const colorMap = new Map([["yes", "green"],["yes-me", "yellow"], ["no", "red"], ["approved", "blue"],["pending","orange"],["changed","purple"],['deleted','grey'],['new','#ADD8E6']]);
-        var newEventIds=new Set();
-        var changedEventIds=new Set();
-        var removedEventIds=new Set();
+        const colorMap = new Map([["yes", "green"], ["yes-me", "yellow"], ["no", "red"], ["approved", "blue"], ["pending", "orange"], ["changed", "purple"], ['deleted', 'grey'], ['new', '#ADD8E6']]);
+        var newEventIds = new Set();
+        var changedEventIds = new Set();
+        var removedEventIds = new Set();
+
         //view->controller
-        function updateAppointmentStatus(id,status){
-            fetch("/updateAppointment",{
-                method:"POST",
+        function updateAppointmentStatus(id, status, officeHourId) {
+            fetch("/updateAppointment", {
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    id:id,
-                    status:status?"approved":"denied"
-                })})
+                    id: id,
+                    officeHourId: officeHourId,
+                    status: status ? "approved" : "denied"
+                })
+            })
         }
 
         function commit() {
-            fetch("/changeOfficeHour",{
-                method:"POST",
+            fetch("/changeOfficeHour", {
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    remove:Array.from(removedEventIds).concat(Array.from(changedEventIds)),
-                    add:Array.from(newEventIds).concat(Array.from(changedEventIds)).map(e=>{
-                        e=calendar.getEventById(e);
-                        return({start:e.start.getTime(),end:e.end.getTime()})
+                    remove: Array.from(removedEventIds).concat(Array.from(changedEventIds)),
+                    add: Array.from(newEventIds).concat(Array.from(changedEventIds)).map(e => {
+                        e = calendar.getEventById(e);
+                        return ({start: e.start.getTime(), end: e.end.getTime()})
                     })
-                })}).then(function () {
-                    newEventIds.forEach(function (e) {
-                        calendar.getEventById(e).remove()
-                    })
-                    newEventIds.clear()
-                    changedEventIds.clear()
-                    removedEventIds.clear()
                 })
+            }).then(function () {
+                newEventIds.forEach(function (e) {
+                    calendar.getEventById(e).remove()
+                })
+                newEventIds.clear();
+                changedEventIds.clear();
+                removedEventIds.clear()
+            })
         }
+
         //view
         var calendar;
 
-        var newEventId_G=-1;
-        function setColor(event){
+        var newEventId_G = -1;
+
+        function setColor(event) {
             if (newEventIds.has(event.id)) {
                 event.setProp("backgroundColor", colorMap.get("new"));
-            }
-            else if (changedEventIds.has(event.id)){
+            } else if (changedEventIds.has(event.id)) {
                 event.setProp("backgroundColor", colorMap.get("changed"));
-            }
-            else if (removedEventIds.has(event.id)){
+            } else if (removedEventIds.has(event.id)) {
                 event.setProp("backgroundColor", colorMap.get("deleted"));
-            }
-            else{
+            } else {
                 event.setProp("backgroundColor", colorMap.get(event.extendedProps.available));
             }
         }
+
         function appointmentManagement(event) {
             var popup = document.createElement("div");
             var description = document.createElement("p");
-            description.textContent=event.extendedProps.description;
-            var but = document.createElement("button")
+            description.textContent = event.extendedProps.description;
+            var but = document.createElement("button");
             but.textContent = "Accept";
             but.onclick = function () {
-                event.setExtendedProp("available","approved")
+                event.setExtendedProp("available", "approved");
                 setColor(event);
-                updateAppointmentStatus(event.extendedProps.appointmentId,true)
-            }
-            var rejbut = document.createElement("button")
+                updateAppointmentStatus(event.extendedProps.appointmentId, true, event.id)
+            };
+            var rejbut = document.createElement("button");
             rejbut.textContent = "Reject";
             rejbut.onclick = function () {
-                event.setExtendedProp("available","yes-me")
-                setColor(event);
-                updateAppointmentStatus(event.extendedProps.appointmentId,false)
-            }
-            popup.appendChild(description)
-            popup.appendChild(but)
-            popup.appendChild(rejbut)
+                //event.setExtendedProp("available","yes-me")
+                //setColor(event);
+                updateAppointmentStatus(event.extendedProps.appointmentId, false, event.id)
+            };
+            popup.appendChild(description);
+            popup.appendChild(but);
+            popup.appendChild(rejbut);
             return popup
         }
+
         function deleteEventConfirm(event) {
             var popup = document.createElement("div");
-            var confirm = document.createElement("button")
+            var confirm = document.createElement("button");
             confirm.textContent = "Delete";
-            confirm.onclick=function(){
+            confirm.onclick = function () {
                 if (newEventIds.has(event.id)) {
-                    newEventIds.delete(event.id)
+                    newEventIds.delete(event.id);
                     event.remove()
-                } else if(changedEventIds.has(event.id)){
-                    event.setStart(event.extendedProps.oriStart)
-                    event.setEnd(event.extendedProps.oriEnd)
-                    event.setExtendedProp("available","deleted");
-                    changedEventIds.delete(event.id)
+                } else if (changedEventIds.has(event.id)) {
+                    event.setStart(event.extendedProps.oriStart);
+                    event.setEnd(event.extendedProps.oriEnd);
+                    event.setExtendedProp("available", "deleted");
+                    changedEventIds.delete(event.id);
                     removedEventIds.add(event.id)
-                } else{
-                    event.setExtendedProp("available","deleted");
+                } else {
+                    event.setExtendedProp("available", "deleted");
                     removedEventIds.add(event.id)
                 }
                 setColor(event);
-            }
-            var cancel = document.createElement("button")
+            };
+            var cancel = document.createElement("button");
             cancel.textContent = "Undo deletion";
-            cancel.onclick=function(){
+            cancel.onclick = function () {
                 popup.remove()
-            }
+            };
             popup.appendChild(confirm);
             popup.appendChild(cancel);
             return popup;
         }
-        
+
         function undoDelete(event) {
             var popup = document.createElement("div");
-            var confirm = document.createElement("button")
+            var confirm = document.createElement("button");
             confirm.textContent = "Undo delete";
-            confirm.onclick=function(){
-                removedEventIds.delete(event.id)
-                event.setExtendedProp("available","yes-me")
+            confirm.onclick = function () {
+                removedEventIds.delete(event.id);
+                event.setExtendedProp("available", "yes-me");
                 setColor(event);
-            }
-            var cancel = document.createElement("button")
+            };
+            var cancel = document.createElement("button");
             cancel.textContent = "Cancel";
-            cancel.onclick=function(){
+            cancel.onclick = function () {
                 popup.remove()
-            }
+            };
             popup.appendChild(confirm);
             popup.appendChild(cancel);
             return popup;
         }
+
         function markOccupied(officeHourId) {
             var toModify = calendar.getEventById(officeHourId);
-            if (toModify.extendedProps.available=="yes-me") {
-                fetch("/appointmentByOfficeHourId?officeHourId="+officeHourId).then(r=>r.json()).then(r=>{toModify.setExtendedProp("description",r.description)})
-                toModify.setDates(toModify.extendedProps.oriStart,toModify.extendedProps.oriEnd);
-                toModify.setExtendedProp("available","pending")
+            if (toModify.extendedProps.available === "yes-me") {
+                fetch("/appointmentByOfficeHourId?officeHourId=" + officeHourId).then(r => r.json()).then(r => {
+                    toModify.setExtendedProp("description", r.description)
+                });
+                toModify.setDates(toModify.extendedProps.oriStart, toModify.extendedProps.oriEnd);
+                toModify.setProp("editable", false);
+                toModify.setExtendedProp("available", "pending");
                 changedEventIds.delete(officeHourId);
                 removedEventIds.delete(officeHourId);
-            }else{
-            toModify.setExtendedProp("available", "no");
+            } else {
+                toModify.setExtendedProp("available", "no");
             }
             setColor(toModify);
         }
-        
-        function handleEventDrag(eventDropInfo){
-            var eventId=eventDropInfo.event.id
-            if(!newEventIds.has(eventId)){
+
+        function markAvailable(id) {
+            var toModify = calendar.getEventById(id);
+            toModify.setExtendedProp("available", toModify.title === uid ? "yes-me" : "yes");
+            setColor(toModify);
+        }
+
+        function handleEventDrag(eventDropInfo) {
+            var eventId = eventDropInfo.event.id;
+            if (!newEventIds.has(eventId)) {
                 changedEventIds.add(eventId);
-                eventDropInfo.event.setExtendedProp("available","changed")
+                eventDropInfo.event.setExtendedProp("available", "changed")
             }
             removedEventIds.delete(eventId);
             setColor(eventDropInfo.event)
         }
-        
-        function handleDateSelect(selectionInfo){
-            var event=calendar.addEvent({
-                id:newEventId_G,
-                title:"new office hour",
-                start:selectionInfo.start,
-                end:selectionInfo.end,
-                backgroundColor:colorMap.get("new"),
-                editable:true,
-                available:"yes-me"
-            })
+
+        function handleDateSelect(selectionInfo) {
+            var event = calendar.addEvent({
+                id: newEventId_G,
+                title: "new office hour",
+                start: selectionInfo.start,
+                end: selectionInfo.end,
+                backgroundColor: colorMap.get("new"),
+                editable: true,
+                available: "yes-me"
+            });
             newEventId_G--;
             newEventIds.add(event.id);
         }
-        
-        
+
+
         function initCalendar(events) {
             //The ID of element to put calendar is 'cal'
             var calendarEl = document.getElementById('cal');
-            var start=new Date()
-            var end=new Date()
-            end.setDate(end.getDate()+6)
+            var start = new Date();
+            var end = new Date();
+            end.setDate(end.getDate() + 6);
             //Initialize calendar
             calendar = new FullCalendar.Calendar(calendarEl, {
                 events: events,
-                plugins: ['timeGrid','interaction' ],
+                plugins: ['timeGrid', 'interaction'],
                 eventDrop: handleEventDrag,
-                eventResize:handleEventDrag,
+                eventResize: handleEventDrag,
                 selectable: true,
-                selectMirror:true,
-                select:handleDateSelect,
+                selectMirror: true,
+                select: handleDateSelect,
                 defaultView: 'timeGrid',
-                eventResizableFromStart:true,
-                visibleRange:{start:start,end:end},
+                eventResizableFromStart: true,
+                visibleRange: {start: start, end: end},
                 header: false,
                 eventClick: function (eventClickInfo) {
                     var popup;
+                    if (eventClickInfo.el.lastElementChild.classList.contains("popup")) {
+                        return
+                    }
                     switch (eventClickInfo.event.extendedProps.available) {
                         case "pending":
-                            popup=appointmentManagement(eventClickInfo.event)
+                            popup = appointmentManagement(eventClickInfo.event);
                             break;
                         case "yes-me":
                         case "changed":
                         case "new":
-                            popup=deleteEventConfirm(eventClickInfo.event)
+                            popup = deleteEventConfirm(eventClickInfo.event);
                             break;
                         case "deleted":
-                            popup=undoDelete(eventClickInfo.event)
+                            popup = undoDelete(eventClickInfo.event);
                             break;
                         default:
                             break;
                     }
-                    
+
                     popup.onclick = function (e) {
                         e.stopPropagation();
                     };
+                    popup.classList.add("popup")
                     eventClickInfo.el.appendChild(popup);
                 }
             });
             calendar.render();
         }
+
         function updateOfficeHours(updates) {
             updates.removed.forEach(function (e) {
                 calendar.getEventById(e).remove()
-            })
+            });
             updates.added.forEach(function (e) {
-                var newEvent=calendar.addEvent({
-                    title:e.tutorId,
-                    id:e.id,
-                    start:e.start,
-                    end:e.end,
-                    available:e.tutorId==uid?"yes-me":"yes",
-                    editable:e.tutorId==uid
-                })
+                var newEvent = calendar.addEvent({
+                    title: e.tutorId,
+                    id: e.id,
+                    start: e.start,
+                    end: e.end,
+                    available: e.tutorId === uid ? "yes-me" : "yes",
+                    editable: e.tutorId === uid
+                });
                 setColor(newEvent)
             })
         }
+
         //controller->view
         //listen for new reservation from other users
         function initPeerListener() {
             socket = io.connect('http://gotutor.com/appointments');
-            socket.on('new', markOccupied)
-            socket.on('changeOfficeHour', updateOfficeHours)
+            socket.on('new', markOccupied);
+            socket.on('changeOfficeHour', updateOfficeHours);
+            socket.on('release', markAvailable)
         }
-        
+
         function transformResponse(content) {
-            uid=content.uid;
-            var events=content.available.map(e=>(
+            uid = content.uid;
+            var events = content.available.map(e => (
                 {
-                    start:e.start*1000,
-                    end:e.end*1000,
-                    oriStart:e.start*1000,
-                    oriEnd:e.end*1000,
-                    title:e.tutor,
-                    id:e.id,
-                    available:e.tutor==uid?"yes-me":"yes",
-                    editable:e.tutor==uid,
-                    eventResizableFromStart:true
+                    start: e.start * 1000,
+                    end: e.end * 1000,
+                    oriStart: e.start * 1000,
+                    oriEnd: e.end * 1000,
+                    title: e.tutor,
+                    id: e.id,
+                    available: e.tutor === uid ? "yes-me" : "yes",
+                    editable: e.tutor === uid,
+                    eventResizableFromStart: true
                 }
-            ))
-            var myAppointments=new Map()
+            ));
+            var myAppointments = new Map();
             content.myAppointments.forEach(e => {
-                myAppointments.set(e.officeHourId,{id:e.id,description:e.description,status:e.status});
+                myAppointments.set(e.officeHourId, {id: e.id, description: e.description, status: e.status});
             });
-            content.unavailable.forEach(e=>{
-                e={
-                    start:e.start*1000,
-                    end:e.end*1000,
-                    title:e.tutor,
-                    id:e.id,
-                    editable:false
-                }
-                var appointment=myAppointments.get(e.id)
-                if (appointment){
-                    e.available=appointment.status
-                    e.appointmentId=appointment.id;
-                    e.description=appointment.description;
-                }else{
-                    e.available='no'
+            content.unavailable.forEach(e => {
+                e = {
+                    start: e.start * 1000,
+                    end: e.end * 1000,
+                    title: e.tutor,
+                    id: e.id,
+                    editable: false
+                };
+                var appointment = myAppointments.get(e.id);
+                if (appointment) {
+                    e.available = appointment.status;
+                    e.appointmentId = appointment.id;
+                    e.description = appointment.description;
+                } else {
+                    e.available = 'no'
                 }
                 events.push(e);
-            })
-//            initPeerListener()
-            events.forEach(e=>{e.backgroundColor=colorMap.get(e.available)});
+            });
+            //initPeerListener()
+            events.forEach(e => {
+                e.backgroundColor = colorMap.get(e.available)
+            });
             return events;
         }
-        
-        var initEvents=fetch("/fetchAppointments").then(res=>res.json()).then(r=>transformResponse(r))
+
+        var initEvents = fetch("/fetchAppointments").then(res => res.json()).then(r => transformResponse(r))
 
         document.addEventListener('DOMContentLoaded', function () {
-            initEvents.then(r=>{
+            initEvents.then(r => {
                 initCalendar(r);
                 initPeerListener();
             })
         });
-
     </script>
 </head>
 
@@ -317,16 +339,15 @@
 <div class="bg-main">
     <div class="container">
         <nav>
-            <img src="images/GoTutor.png" alt="logo" class="logo">
-            <!--TODO: Classroom navigation-->
+            <img src="../images/GoTutor.png" alt="logo" class="logo">
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
                 <li><a href="classroom.html">Classroom</a></li>
-                <li><a href="appointment.html">Appointments</a></li>
-                <li><a href="forum.html">Forum</a></li>
-                <li><a href="tutor.html">Tutors</a></li>
-                <li><a href="setting.html">Settings</a></li>
-                <li><a href="help.html">Help</a></li>
+                <li style="color: #F3E500;">Appointments</li>
+                <li><a href="../forum.html">Forum</a></li>
+                <li><a href="../tutor.html">Tutors</a></li>
+                <li><a href="../setting.html">Settings</a></li>
+                <li><a href="../help.html">Help</a></li>
                 <li><a href="#" onclick="signOut();">Logout</a></li>
             </ul>
         </nav>
@@ -334,22 +355,8 @@
             <h1>Appointment calendar</h1>
             <button onclick="commit();">Confirm Changes</button>
             <div id="cal"></div>
-            <h1>Add an appointment</h1>
-            <form action="/addAppointment" method="GET">
-                <label>
-                    Date <input type="date" name="appointmentDate"/>
-                </label>
-                <label>
-                   Begin Time <input type="time" name="beginTime"/>
-                </label>
-                <label>
-                    End Time <input type="time" name="endTime"/>
-                </label>
-                <input type="submit" value="Create appointment" class="buttons"/>
-            </form>
             <div id="rtst"></div>
         </div>
     </div>
-</div>
 </div>
 </body>

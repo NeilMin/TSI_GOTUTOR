@@ -28,8 +28,11 @@
                             //TODO: Determine if user is a tutor!
                             sessionStorage.setItem("isTutor", "false");
                         }
-
-                            window.location.replace("appointment.html");
+                        if (sessionStorage.getItem("isTutor") === "true") {
+                            window.location.replace("tutorUI/appointment.html");
+                        } else {
+                            window.location.replace("studentUI/appointment.html");
+                        }
                     } else {
                         document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;
                     }

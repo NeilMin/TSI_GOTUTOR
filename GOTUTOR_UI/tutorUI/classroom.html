@@ -34,7 +34,7 @@
             <img src="../images/GoTutor.png" alt="logo" class="logo">
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
-                <li><a href="classroom.html">Classroom</a></li>
+                <li style="color: #F3E500;">Classroom</li>
                 <li><a href="appointment.html">Appointments</a></li>
                 <li><a href="../forum.html">Forum</a></li>
                 <li><a href="../tutor.html">Tutors</a></li>
@@ -44,8 +44,12 @@
             </ul>
         </nav>
         <div class="content">
-            <h1>Elevate Students by E-Mail</h1>
-            <textarea id="tutorList" rows="5">Enter E-Mail Addresses</textarea>
+            <!--TODO: Office hours-->
+            <h1>Classroom Office Hours</h1>
+            <label for="tutorList">
+                Elevate Students by E-Mail<br>
+                <textarea id="tutorList" cols="26" rows="5">Enter E-Mail Addresses, separated by newline!</textarea>
+            </label><br/>
             <button onclick="modifyTutor();">Elevate to Tutor</button>
         </div>
     </div>

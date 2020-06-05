@@ -7,37 +7,6 @@
     <script src="../auth.js"></script>
 </head>
 
-
-<script>
-    var socket;
-    //Translate REST API response to the format accepted by full calendar api
-    function transformEvent(info) {
-        //info.event.setProp("backgroundColor",colorMap.get(info.event.extendedProps.available))
-        info.backgroundColor = colorMap.get(info.available);
-        console.log(info)
-    }
-
-    //view
-    var calendar;
-
-    document.addEventListener('DOMContentLoaded', function () {
-        //The ID of element to put calendar is 'cal'
-        var calendarEl = document.getElementById('cal');
-
-        //Initialize calendar
-        calendar = new FullCalendar.Calendar(calendarEl, {
-            events: '/fetchOfficeHours',
-            plugins: ['timeGrid'],
-            eventDataTransform: transformEvent,
-            //eventSourceSuccess: initPeerListener(calendar, markOccupied),
-            defaultView: 'timeGridWeek',
-            header: false
-        });
-
-        calendar.render();
-    });
-</script>
-
 <body>
 <div class="bg-main">
     <div class="container">
@@ -45,7 +14,7 @@
             <img src="../images/GoTutor.png" alt="logo" class="logo">
             <ul class="navigation">
                 <li><a href="writeup.html">Assignment</a></li>
-                <li><a href="classroom.html">Classroom</a></li>
+                <li style="color: #F3E500;">Classroom</li>
                 <li><a href="appointment.html">Appointments</a></li>
                 <li><a href="../forum.html">Forum</a></li>
                 <li><a href="../tutor.html">Tutors</a></li>
@@ -55,8 +24,8 @@
             </ul>
         </nav>
         <div class="content">
+            <!--TODO: Office hours-->
             <h1>Classroom Office Hours</h1>
-            <div id="cal"></div>
         </div>
     </div>
 </div>

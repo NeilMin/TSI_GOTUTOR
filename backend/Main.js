@@ -52,14 +52,17 @@ sio.of('/appointments').on("connection", function (socket) {
     socket.on("reserve", (data,res) => {
         //add Appointment
         console.log(data);
-        model.createAppointment(data.question,data.date,socket.request.session.uid,data.id).then(r=>{res(r.getAutoIncrementValue())})
+        model.createAppointment(data.question,data.date,socket.request.session.uid,data.id).then(r=>{
+            console.log("inc"+r.getAutoIncrementValue())
+            res(r.getAutoIncrementValue())
+        })
         console.log("from " + socket.request.session.uid);
         socket.broadcast.emit('new', data.id);
     })
     socket.on("delete",(data)=>{
         console.log(data);
-        model.deleteAppointmentById(data);
-        
+        model.deleteAppointmentById(data.appointmentId);
+        socket.broadcast.emit("release",data.officeHourId);
     })
 });
 
@@ -101,8 +104,6 @@ app.use('/', express.static('GOTUTOR_UI'));
 
 app.use(cookieSessionMiddleware);
 
-//<li><a href="writeup.html">Assignment</a></li>
-//<li><a href="classroom.html">Classroom</a></li>
 app.use(function (req,res,next) {
     console.log(req.session.role)
     if (req.session.role=="staff") {
@@ -193,6 +194,7 @@ app.post('/updateAppointment',function (req,res) {
     model.updateAppointmentById(req.body.id,req.body.status,null).then(r=>{
         res.send("success");
     })
+    sio.of('/appointment').emit(req.body.status=="approved"?"approved":"release",req.body.officeHourId);
 })
 
 

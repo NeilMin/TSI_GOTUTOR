@@ -29,7 +29,7 @@
         var changedEventIds=new Set();
         var removedEventIds=new Set();
         //view->controller
-        function updateAppointmentStatus(id,status){
+        function updateAppointmentStatus(id,status,officeHourId){
             fetch("/updateAppointment",{
                 method:"POST",
                 headers: {
@@ -37,6 +37,7 @@
                 },
                 body: JSON.stringify({
                     id:id,
+                    officeHourId:officeHourId,
                     status:status?"approved":"denied"
                 })})
         }
@@ -89,14 +90,14 @@
             but.onclick = function () {
                 event.setExtendedProp("available","approved")
                 setColor(event);
-                updateAppointmentStatus(event.extendedProps.appointmentId,true)
+                updateAppointmentStatus(event.extendedProps.appointmentId,true,event.id)
             }
             var rejbut = document.createElement("button")
             rejbut.textContent = "Reject";
             rejbut.onclick = function () {
-                event.setExtendedProp("available","yes-me")
-                setColor(event);
-                updateAppointmentStatus(event.extendedProps.appointmentId,false)
+                //event.setExtendedProp("available","yes-me")
+                //setColor(event);
+                updateAppointmentStatus(event.extendedProps.appointmentId,false,event.id)
             }
             popup.appendChild(description)
             popup.appendChild(but)
@@ -156,6 +157,7 @@
             if (toModify.extendedProps.available=="yes-me") {
                 fetch("/appointmentByOfficeHourId?officeHourId="+officeHourId).then(r=>r.json()).then(r=>{toModify.setExtendedProp("description",r.description)})
                 toModify.setDates(toModify.extendedProps.oriStart,toModify.extendedProps.oriEnd);
+                toModify.setProp("editable",false);
                 toModify.setExtendedProp("available","pending")
                 changedEventIds.delete(officeHourId);
                 removedEventIds.delete(officeHourId);
@@ -164,7 +166,11 @@
             }
             setColor(toModify);
         }
-        
+        function markAvailable(id) {
+            var toModify=calendar.getEventById(id);
+            toModify.setExtendedProp("available",toModify.extendedProps.title==uid?"yes-me":"yes");
+            setColor(toModify);
+        }
         function handleEventDrag(eventDropInfo){
             var eventId=eventDropInfo.event.id
             if(!newEventIds.has(eventId)){
@@ -257,6 +263,7 @@
             socket = io.connect('http://gotutor.com/appointments');
             socket.on('new', markOccupied)
             socket.on('changeOfficeHour', updateOfficeHours)
+            socket.on('available',markAvailable)
         }
         
         function transformResponse(content) {

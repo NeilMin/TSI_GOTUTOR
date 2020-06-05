@@ -20,21 +20,44 @@
         //connect web socket for communicating reservation made by this user and other user
         var socket;
         //mapping time slot status to color
-        const colorMap = new Map([["yes", "green"], ["no", "red"], ["me", "blue"]]);
+        const colorMap = new Map([["yes", "green"], ["no", "red"],["pending", "yellow"], ["approved", "blue"]]);
 
         //view->controller
         function reserveAppointment(officeHourId, question,date,cb) {
-            socket.emit('reserve', {id: officeHourId, question: question,date:date},cb);
+            socket.emit('reserve', {id: officeHourId, question: question,date:date},data=>{
+                cb(data)
+            });
         }
         function translateDate(d) {
             return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
         }
-        function deleteAppointment(appointmentId){
-            socket.emit('delete', appointmentId);
+        function deleteAppointment(appointmentId,OHid){
+            socket.emit('delete', {appointmentId:appointmentId,officeHourId:OHid});
         }
         //view
         var calendar;
-
+        
+        function updateEventStatus(toModify,status){
+            if (typeof(officeHourId)=="string") {
+                toModify = calendar.getEventById(toModify);
+            }
+            toModify.setExtendedProp("available", status);
+            toModify.setProp("backgroundColor", colorMap.get(status));
+        }
+        function markOccupied(officeHourId) {
+            updateOfficeHours(officeHourId,"no")
+        }
+        
+        function markAvailable(officeHourId) {
+            updateOfficeHours(officeHourId,"yes")
+        }
+        
+        function markApproved(officeHourId){
+            var toModify = calendar.getEventById(officeHourId);
+            if (toModify.extendedProps.available=="pending") {
+                updateEventStatus(officeHourId,"approved");
+            }
+        }
         function getNewAppointmentDialog(event) {
             //prompt up for user to make appointment
             var prompt = document.createElement("div");
@@ -52,9 +75,8 @@
                 reserveAppointment(event.id, question.value,translateDate(event.start),function (res) {
                     event.setExtendedProp("appointmentId",res);
                 });
-                event.setExtendedProp("available", "me");
                 event.setExtendedProp("appointmentDescription",question.value)
-                event.setProp("backgroundColor", colorMap.get("me"));
+                updateEventStatus(event,"pending")
                 //remove the prompt
                 prompt.remove()
             };
@@ -79,19 +101,14 @@
             var deleteAppointmentbtn=document.createElement("button");
             deleteAppointmentbtn.textContent="Delete this Appointment"
             deleteAppointmentbtn.onclick=function(){
-                deleteAppointment(event.extendedProps.appointmentId)
+                deleteAppointment(event.extendedProps.appointmentId,event.id);
+                updateEventStatus(event,"yes")
             };
             message.appendChild(deleteAppointmentbtn);
             setTimeout(() => {
                 message.remove();
             }, 5000);
             return message;
-        }
-        
-        function markOccupied(officeHourId) {
-            var toModify = calendar.getEventById(officeHourId);
-            toModify.setExtendedProp("available", "no");
-            toModify.setProp("backgroundColor", colorMap.get("no"));
         }
         
         function initCalendar(events) {
@@ -113,7 +130,7 @@
                         case "no":
                             dialog=getOccupiedDialog();
                             break;
-                        case "me":
+                        default:
                             dialog=showDescriptionDialog(eventClickInfo.event);
                             break;
                     }
@@ -144,13 +161,14 @@
                 })
             })
         }
+        
         //controller->view
         //listen for new reservation from other users
         function initPeerListener() {
             socket = io.connect('http://gotutor.com/appointments');
             socket.on('new', markOccupied)
             socket.on('changeOfficeHour', updateOfficeHours)
-            
+            socket.on('release',markAvailable)
         }
         function transformResponse(content) {
             var events=content.available.map(e=>(
@@ -176,8 +194,8 @@
                 }
                 var appointment=myAppointments.get(e.id)
                 if (appointment){
-                    e.available='me'
-                    e.backgroundColor=colorMap.get("me")
+                    e.available=appointment.status
+                    e.backgroundColor=colorMap.get(appointment.status)
                     e.appointmentId=appointment.id;
                     e.appointmentDescription=appointment.description;
                 }else{

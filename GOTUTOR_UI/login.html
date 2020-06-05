@@ -28,8 +28,7 @@
                             //TODO: Determine if user is a tutor!
                             sessionStorage.setItem("isTutor", "false");
                         }
-
-                            window.location.replace("appointment.html");
+                        window.location.replace("appointment.html");
                     } else {
                         document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;
                     }

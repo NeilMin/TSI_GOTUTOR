@@ -20,7 +20,7 @@
         //connect web socket for communicating reservation made by this user and other user
         var socket;
         //mapping time slot status to color
-        const colorMap = new Map([["yes", "green"], ["no", "red"], ["pending", "yellow"], ["approved", "blue"]]);
+        const colorMap = new Map([["yes", "green"], ["no", "red"], ["pending", "orange"], ["approved", "blue"]]);
 
         //view->controller
         function reserveAppointment(officeHourId, question, date, cb) {
@@ -248,11 +248,12 @@
         </nav>
         <div class="content">
             <h1>Appointment calendar</h1>
+            <p>Office Hour status color code</p>
             <ul class="legend">
-                <li><span class="yes"></span> Yes</li>
-                <li><span class="no"></span> No</li>
-                <li><span class="approved"></span> Approved</li>
-                <li><span class="pending"></span> Pending</li>
+                <li><span class="yes"></span> Available</li>
+                <li><span class="no"></span> Unavailable</li>
+                <li><span class="approved"></span> My Approved Appointments</li>
+                <li><span class="pending"></span> My Appointments Pending Approval</li>
             </ul>
             <div id="cal"></div>
         </div>

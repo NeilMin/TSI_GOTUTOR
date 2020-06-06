@@ -46,10 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return (<div className={"replyMain"}>
                 {this.state.replies.map(x => (<Reply key={x.id} reply={x.reply} userId={x.userId}></Reply>))}
                 <form className="newReply" onSubmit={this.handleReplyInput}>
-                    <label>New Reply</label>
-                    Reply:
+                    <label>New</label>
                     <input type="text" value={this.state.newReplyVal} onChange={this.handleReplyInputChange}/>
-                    <input type="submit" value="Post reply." className="buttons"/>
+                    <input type="submit" value="Post reply" className="buttons"/>
                 </form>
             </div>)
         }

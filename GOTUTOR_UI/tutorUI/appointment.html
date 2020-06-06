@@ -328,11 +328,11 @@
                 };
                 var appointment = myAppointments.get(e.id);
                 if (appointment) {
-                    e.extendedProps.available = appointment.status;
-                    e.extendedProps.appointmentId = appointment.id;
-                    e.extendedProps.description = appointment.description;
+                    e.available = appointment.status;
+                    e.appointmentId = appointment.id;
+                    e.description = appointment.description;
                 } else {
-                    e.extendedProps.available = 'no'
+                    e.available = 'no'
                 }
                 events.push(e);
             });

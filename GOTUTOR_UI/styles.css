@@ -166,6 +166,18 @@ table, th, td {
     border: 2px solid #FC8900;
 }
 
+.buttonDisabled {
+    font-size: 15px;
+    background-color: gray;
+    color: white;
+    text-align: center;
+    border: none;
+    text-decoration: none;
+    padding: 2px 12px;
+    border: 2px solid gray;
+}
+
+
 .buttons:hover{
     background-color: white;
     color: #FC8900;

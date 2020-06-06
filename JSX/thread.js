@@ -39,7 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         handleReplyInput(event) {
             event.preventDefault();
-            replySocket.emit('newReply', {threadId: this.props.threadId, reply: this.state.newReplyVal});
+            if (this.state.newReplyVal.length!=0) {
+                replySocket.emit('newReply', {threadId: this.props.threadId, reply: this.state.newReplyVal});
+            }
         }
 
         render() {
@@ -48,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <form className="newReply" onSubmit={this.handleReplyInput}>
                     <label>New Reply</label>
                     <input type="text" value={this.state.newReplyVal} onChange={this.handleReplyInputChange}/>
-                    <input type="submit" value="Post reply" className="buttons"/>
+                    <input type="submit" value="Post reply" className={this.state.newReplyVal.length!=0?"buttons":"buttonDisabled"}/>
                 </form>
             </div>)
         }

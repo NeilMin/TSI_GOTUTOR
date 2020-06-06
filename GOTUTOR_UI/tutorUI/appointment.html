@@ -80,6 +80,9 @@
                 event.setProp("backgroundColor", colorMap.get("deleted"));
             } else {
                 event.setProp("backgroundColor", colorMap.get(event.extendedProps.available));
+                if (event.extendedProps.available=="yes-me") {
+                    event.setProp("editable", true);
+                }
             }
         }
 
@@ -159,6 +162,7 @@
             if (toModify.extendedProps.available === "yes-me") {
                 fetch("/appointmentByOfficeHourId?officeHourId=" + officeHourId).then(r => r.json()).then(r => {
                     toModify.setExtendedProp("description", r.description)
+                    toModify.setExtendedProp("appointmentId", r.id)
                 });
                 toModify.setDates(toModify.extendedProps.oriStart, toModify.extendedProps.oriEnd);
                 toModify.setProp("editable", false);
@@ -215,6 +219,7 @@
                 eventDrop: handleEventDrag,
                 eventResize: handleEventDrag,
                 selectable: true,
+                height:"auto",
                 selectMirror: true,
                 select: handleDateSelect,
                 defaultView: 'timeGrid',

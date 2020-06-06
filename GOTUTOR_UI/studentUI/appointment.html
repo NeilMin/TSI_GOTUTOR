@@ -41,7 +41,7 @@
         var calendar;
 
         function updateEventStatus(toModify, status) {
-            if (typeof (officeHourId) == "string") {
+            if (typeof (toModify) == "string") {
                 toModify = calendar.getEventById(toModify);
             }
             toModify.setExtendedProp("available", status);
@@ -49,11 +49,11 @@
         }
 
         function markOccupied(officeHourId) {
-            updateOfficeHours(officeHourId, "no")
+            updateEventStatus(officeHourId, "no")
         }
 
         function markAvailable(officeHourId) {
-            updateOfficeHours(officeHourId, "yes")
+            updateEventStatus(officeHourId, "yes")
         }
 
         function markApproved(officeHourId) {
@@ -126,6 +126,7 @@
             calendar = new FullCalendar.Calendar(calendarEl, {
                 events: events,
                 plugins: ['timeGrid'],
+                height:"auto",
                 eventClick: function (eventClickInfo) {
                     var dialog;
                     if (eventClickInfo.el.lastElementChild.classList.contains("popup")) {
@@ -146,6 +147,7 @@
                     dialog.onclick = function (e) {
                         e.stopPropagation();
                     };
+                    eventClickInfo.el.style.zIndex++;
                     dialog.classList.add("popup")
                     eventClickInfo.el.appendChild(dialog);
                 },
@@ -178,7 +180,8 @@
             socket = io.connect('http://gotutor.com/appointments');
             socket.on('new', markOccupied);
             socket.on('changeOfficeHour', updateOfficeHours);
-            socket.on('release', markAvailable)
+            socket.on('release', markAvailable);
+            socket.on('approved',markApproved);
         }
 
         function transformResponse(content) {
@@ -194,7 +197,9 @@
             ));
             var myAppointments = new Map();
             content.myAppointments.forEach(e => {
-                myAppointments.set(e.officeHourId, {id: e.id, description: e.description});
+                if(e.status!="denied"){
+                    myAppointments.set(e.officeHourId, {id: e.id, description: e.description,status:e.status});
+                }
             });
             content.unavailable.forEach(e => {
                 e = {

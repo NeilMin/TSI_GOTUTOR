@@ -128,16 +128,9 @@ module.exports.deleteAppointmentById=function (id) {
   return db.then(db=>(db.getTable('appointment').delete().where('idappointment=:id').bind('id',id).execute()))
 };
 
-module.exports.updateAppointmentById=function(id,status,description){
+module.exports.updateAppointmentById=function(id,status){
   return db.then(db => { 
-    var query=db.getTable('appointment').update().where('`idappointment`=:id').bind('id', id);
-    if (description!=null) {
-      query.set('description',description);
-    }
-    if (status!=null){
-      query.set('status',status);
-    }
-    query.execute() })
+    return db.getTable('appointment').update().where('`idappointment`=:id').bind('id', id).set('status',status).execute()})
 }
 module.exports.readAppointmentByStudentId=function (classroom,user) {
   return db.then(db=>{

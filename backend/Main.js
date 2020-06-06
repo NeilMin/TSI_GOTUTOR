@@ -182,26 +182,12 @@ app.post('/changeOfficeHour', function (req, res) {
         })
     })
 })
-/* Already implemented via socket appointment and office hour are together
-app.get('/fetchOfficeHours', function (req, res) {
-    //TODO: Implement office hour query
-});
 
-app.get('/addAppointment', function (req, res) {
-    const appointmentId = 1;
-    const appointmentTitle = "Appointment";
-    const appointmentDate = req.query.appointmentDate;
-    const appointmentStart = appointmentDate + "T" + req.query.beginTime + ":00";
-    const appointmentEnd = appointmentDate + "T" + req.query.endTime + ":00";
-    //TODO: Ready to insert, need to modify DB functionality
-
-    res.redirect("/tutor-appointment.html");
-});
-*/
 app.post('/updateAppointment', function (req, res) {
     console.log(req.body);
     sio.of('/appointments').emit(req.body.status === "approved" ? "approved" : "release", req.body.officeHourId);
     model.updateAppointmentById(req.body.id, req.body.status, null).then(r => {
+        console.log(r.getAffectedItemsCount())
         res.send("success");
     })
 })
@@ -214,7 +200,14 @@ app.get('/testUser', function (req, res) {
     model.createUser(req.query.user, 'student', DUMMY_CLASSROOM).catch(e => {
         console.log('already exist')
     });
-    res.redirect("/testLanding.html");
+    var userRole=model.readClassroomByUser(req.query.user).then(r=>{
+        if (r.length===0) {
+            req.session.role = 'student';
+        }else{
+            req.session.role=r[0].role;
+        }
+    })
+    userRole.then(r=>{res.redirect("/testLanding.html")});
 });
 
 

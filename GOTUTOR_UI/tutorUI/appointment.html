@@ -338,7 +338,7 @@
             });
             //initPeerListener()
             events.forEach(e => {
-                e.backgroundColor = colorMap.get(e.available)
+                e.backgroundColor = colorMap.get(e.extendedProps.available)
             });
             return events;
         }

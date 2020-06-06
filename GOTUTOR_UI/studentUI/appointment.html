@@ -73,7 +73,7 @@
             //submit button
             var submit = document.createElement("button");
             var submitText = document.createElement("p");
-            submitText.textContent = "submit";
+            submitText.textContent = "Reserve";
             submit.appendChild(submitText);
             submit.onclick = function () {
                 //tell backend reservation made
@@ -91,7 +91,7 @@
 
         function getOccupiedDialog() {
             var message = document.createElement("p");
-            message.textContent = "This slot have been reserved";
+            message.textContent = "This appointment has been reserved";
             setTimeout(() => {
                 message.remove();
             }, 5000);
@@ -104,7 +104,7 @@
             description.textContent = event.extendedProps.appointmentDescription;
             message.appendChild(description);
             var deleteAppointmentbtn = document.createElement("button");
-            deleteAppointmentbtn.textContent = "Delete this Appointment";
+            deleteAppointmentbtn.textContent = "Delete Appointment";
             deleteAppointmentbtn.onclick = function () {
                 deleteAppointment(event.extendedProps.appointmentId, event.id);
                 updateEventStatus(event, "yes")

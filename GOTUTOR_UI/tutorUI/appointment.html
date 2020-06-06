@@ -150,7 +150,7 @@
         function undoDelete(event) {
             var popup = document.createElement("div");
             var confirm = document.createElement("button");
-            confirm.textContent = "Undo delete";
+            confirm.textContent = "Undo Deletion";
             confirm.onclick = function () {
                 removedEventIds.delete(event.id);
                 event.setExtendedProp("available", "yes-me");
@@ -203,7 +203,7 @@
         function handleDateSelect(selectionInfo) {
             var event = calendar.addEvent({
                 id: newEventId_G,
-                title: "new office hour",
+                title: "New Appointment",
                 start: selectionInfo.start,
                 end: selectionInfo.end,
                 backgroundColor: colorMap.get("new"),
@@ -368,14 +368,14 @@
         </nav>
         <div class="content">
             <h1>Appointment calendar</h1>
-            <p>Office Hour status color code</p>
+            <p>Appointment Color Code</p>
             <ul class="legend">
-                <li><span class="yes"></span> Unoccupied Office Hour</li>
-                <li><span class="yes-me"></span> My Unoccupied Office Hour</li>
-                <li><span class="no"></span> Occupied Office Hour</li>
-                <li><span class="approved"></span> My Approved Appointments</li>
-                <li><span class="pending"></span> Appointment pending approval</li>
-                <li><span class="changed"></span> Changed</li>
+                <li><span class="yes"></span> Unoccupied (Different Tutor)</li>
+                <li><span class="yes-me"></span> Unoccupied (Current Tutor)</li>
+                <li><span class="no"></span> Occupied</li>
+                <li><span class="approved"></span> Approved</li>
+                <li><span class="pending"></span> Pending Approval</li>
+                <li><span class="changed"></span> Modified</li>
                 <li><span class="deleted"></span> Deleted</li>
                 <li><span class="new"></span> New</li>
             </ul>

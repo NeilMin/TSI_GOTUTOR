@@ -117,8 +117,8 @@
                     newEventIds.delete(event.id);
                     event.remove()
                 } else if (changedEventIds.has(event.id)) {
-                    event.setStart(event.extendedProps.oriStart);
-                    event.setEnd(event.extendedProps.oriEnd);
+                    event.setStart(event.extendedProps.originalStart);
+                    event.setEnd(event.extendedProps.originalEnd);
                     event.setExtendedProp("available", "deleted");
                     changedEventIds.delete(event.id);
                     removedEventIds.add(event.id)
@@ -168,12 +168,14 @@
 
         function markOccupied(officeHourId) {
             var toModify = calendar.getEventById(officeHourId);
-            if (toModify.extendedProps.available === "yes-me") {
+            if (toModify.extendedProps.available == "yes-me"||
+            toModify.extendedProps.available == "changed"||
+            toModify.extendedProps.available == "deleted") {
                 fetch("/appointmentByOfficeHourId?officeHourId=" + officeHourId).then(r => r.json()).then(r => {
                     toModify.setExtendedProp("description", r.description)
                     toModify.setExtendedProp("appointmentId", r.id)
                 });
-                toModify.setDates(toModify.extendedProps.oriStart, toModify.extendedProps.oriEnd);
+                toModify.setDates(toModify.extendedProps.originalStart, toModify.extendedProps.originalEnd);
                 toModify.setProp("editable", false);
                 toModify.setExtendedProp("available", "pending");
                 changedEventIds.delete(officeHourId);
@@ -301,13 +303,15 @@
                 {
                     start: e.start * 1000,
                     end: e.end * 1000,
-                    oriStart: e.start * 1000,
-                    oriEnd: e.end * 1000,
                     title: e.tutor,
                     id: e.id,
-                    available: e.tutor === uid ? "yes-me" : "yes",
                     editable: e.tutor === uid,
-                    eventResizableFromStart: true
+                    eventResizableFromStart: true,
+                    extendedProps: {
+                        originalStart: e.start * 1000,
+                        originalEnd: e.end * 1000,
+                        available: e.tutor === uid ? "yes-me" : "yes",
+                    }
                 }
             ));
             var myAppointments = new Map();

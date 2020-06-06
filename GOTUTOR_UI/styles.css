@@ -220,3 +220,26 @@ input[type=text]:focus {
     position:relative;
     z-index: 5;
 }
+
+.legend { 
+    list-style: none; 
+}
+.legend li { 
+    float: left; 
+    margin-right: 10px; 
+   }
+.legend span { 
+    border: 1px solid white; 
+    float: left; 
+    width: 20px; 
+    height: 20px; 
+    margin: 2px; }
+
+.legend .yes { background-color: green; }
+.legend .yes-me { background-color: yellow; }
+.legend .no { background-color: red; }
+.legend .approved { background-color: blue; }
+.legend .pending { background-color: orange; }
+.legend .changed { background-color: purple; }
+.legend .deleted { background-color: grey; }
+.legend .new { background-color: #ADD8E6; }

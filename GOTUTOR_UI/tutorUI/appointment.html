@@ -281,8 +281,12 @@
                     id: e.id,
                     start: e.start,
                     end: e.end,
-                    available: e.tutorId === uid ? "yes-me" : "yes",
-                    editable: e.tutorId === uid
+                    editable: e.tutorId === uid,
+                    extendedProps:{
+                        available: e.tutorId === uid ? "yes-me" : "yes",
+                        oriEnd:e.end,
+                        oriStart:e.start
+                    }
                 });
                 setColor(newEvent)
             })

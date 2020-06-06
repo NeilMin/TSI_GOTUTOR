@@ -227,7 +227,7 @@ app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
         return next(error)
     }
 
-    res.redirect("tutor-writeup.html");
+    res.redirect("writeup.html");
 });
 
 

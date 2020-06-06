@@ -1,6 +1,5 @@
 //import React from 'react';
 document.addEventListener("DOMContentLoaded", function () {
-    var replySocket = io.connect("http://gotutor.com/forumReply");
 
     class Reply extends React.Component {
         render() {
@@ -20,8 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
             this.handleReplyInputChange = this.handleReplyInputChange.bind(this);
             this.handleReplyInput = this.handleReplyInput.bind(this);
             this.handleOtherReply = this.handleOtherReply.bind(this);
-            replySocket.emit('fetch', props.threadId, this.repliesInit);
-            replySocket.on("otherReply", this.handleOtherReply)
+            props.replySocket.emit('fetch', props.threadId, this.repliesInit);
+            props.replySocket.on("otherReply", this.handleOtherReply)
         }
 
         repliesInit(res) {
@@ -40,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
         handleReplyInput(event) {
             event.preventDefault();
             if (this.state.newReplyVal.length!=0) {
-                replySocket.emit('newReply', {threadId: this.props.threadId, reply: this.state.newReplyVal});
+                this.props.replySocket.emit('newReply', {threadId: this.props.threadId, reply: this.state.newReplyVal});
             }
         }
 
@@ -75,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <p>posted by {this.props.content.userId}</p>
                 </div>
                 {this.state.expanded ?
-                    <ThreadRepliesContainer threadId={this.props.content.id}></ThreadRepliesContainer> : <div className={"replyContainer"}></div>}
+                    <ThreadRepliesContainer threadId={this.props.content.id} replySocket={io.connect("http://gotutor.com/forumReply")}></ThreadRepliesContainer> : <div className={"replyContainer"}></div>}
             </div>)
         }
     }

@@ -129,7 +129,7 @@
                 setColor(event);
             };
             var cancel = document.createElement("button");
-            cancel.textContent = "Undo deletion";
+            cancel.textContent = "Cancel";
             cancel.onclick = function () {
                 popup.remove()
             };
@@ -137,7 +137,16 @@
             popup.appendChild(cancel);
             return popup;
         }
-
+        
+        function viewAppointment(event) {
+            var popup=document.createElement("p");
+            popup.textContent=event.extendedProps.description;
+            setTimeout(() => {
+                popup.remove();
+            }, 5000);
+            return popup;
+        }
+        
         function undoDelete(event) {
             var popup = document.createElement("div");
             var confirm = document.createElement("button");
@@ -243,8 +252,11 @@
                         case "deleted":
                             popup = undoDelete(eventClickInfo.event);
                             break;
-                        default:
+                        case "approved":
+                            popup=viewAppointment(eventClickInfo.event);
                             break;
+                        default:
+                            return;
                     }
 
                     popup.onclick = function (e) {

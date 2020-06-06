@@ -203,3 +203,8 @@ input[type=text]:focus {
     border: 2px solid #FC8900;
     border-radius: 4px;
 }*/
+
+.popup{
+    position:relative;
+    z-index: 5;
+}

@@ -65,6 +65,7 @@ CREATE TABLE `classroom` (
 --
 
 LOCK TABLES `classroom` WRITE;
+INSERT INTO classroom (`idclassroom`) VALUES('a');
 /*!40000 ALTER TABLE `classroom` DISABLE KEYS */;
 /*!40000 ALTER TABLE `classroom` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -107,7 +108,7 @@ DROP TABLE IF EXISTS `forumThread`;
 /*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `forumThread` (
   `idforumThread` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(64) NOT NULL,
+  `title` longtext NOT NULL,
   `paragraph` longtext NOT NULL,
   `user_iduser` varchar(45) NOT NULL,
   `classroom_idclassroom` varchar(64) NOT NULL,

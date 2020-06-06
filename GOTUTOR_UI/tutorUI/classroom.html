@@ -23,8 +23,15 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(valid),
+        }).then(function () {
+            document.getElementById("success").textContent="success"
         })
     }
+    document.addEventListener('DOMContentLoaded',function () {
+        fetch('/fetchTutor').then(r=>(r.json())).then(val=>{
+            document.getElementById('tutorList').value=val.map(v=>(v+"@ucsd.edu")).join('\n');
+        })
+    })
 </script>
 
 <body>
@@ -48,9 +55,11 @@
             <h1>Classroom Office Hours</h1>
             <label for="tutorList">
                 <h3>Elevate Students by E-Mail</h3>
-                <textarea id="tutorList" cols="26" rows="5">Enter E-Mail Addresses, separated by newline!</textarea>
+                <p>Enter E-Mail Addresses, separated by newline!</p>
+                <p>Only account with email in the following list will be set as tutor.(Remove email to remove tutor)</p>
+                <textarea id="tutorList" cols="26" rows="5"></textarea>
             </label><br/>
             <button class="buttons" onclick="modifyTutor();">Elevate to Tutor</button>
+            <p id="success"></p>
         </div>
     </div>
->>>>>>> 8fc07d93112e2a4c9ff181477ca185e1e44c21b6

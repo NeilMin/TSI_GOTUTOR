@@ -231,7 +231,7 @@ app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
 });
 
 
-app.post('/alterTutor', upload.single('students.xlsx'), (req, res, next) => {
+app.post('/alterTutor', (req, res) => {
     console.log(req.body);
     model.updateUser(null, 'student', DUMMY_CLASSROOM).then(function () {
         req.body.forEach(u => {
@@ -242,7 +242,12 @@ app.post('/alterTutor', upload.single('students.xlsx'), (req, res, next) => {
     });
     res.send("");
 });
-
+app.get('/fetchTutor',(req,res)=>{
+    model.readTutorByClassroom(DUMMY_CLASSROOM).then(r=>{
+        console.log(r);
+        res.send(r)
+    });
+})
 app.get('/textSuggest', function (req, res) {
     const textBody = req.query.textBody;
     const currentDate = new Date();

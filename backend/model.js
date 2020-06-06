@@ -32,8 +32,8 @@ module.exports.updateUser = function (user, role, classroom) {
   });
 };
 
-module.exports.readUserByClassroom = function (classroom) {
-  return db.then(db => { return db.getTable('user').select('iduser', 'user_type').where('classroom_idclassroom=:cid').bind('cid', classroom).execute() }).then(r => (r.fetchAll().map(x => { return ({ userId: x[0], role: x[1] }) })))
+module.exports.readTutorByClassroom = function (classroom) {
+  return db.then(db => { return db.getTable('user').select('iduser').where('classroom_idclassroom=:cid AND user_type=\'staff\'').bind('cid', classroom).execute() }).then(r => (r.fetchAll().map(x => { return (x[0]) })))
 };
 
 module.exports.readClassroomByUser = function (user) {

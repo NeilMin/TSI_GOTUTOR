@@ -23,11 +23,7 @@
                 if (this.readyState === 4 && this.status === 200) {
                     let response = JSON.parse(this.responseText);
                     if (response.success) {
-                        for (const userInfo in response.userInfos) {
-                            sessionStorage.setItem(userInfo, response.userInfos[userInfo]);
-                        }
-                        //TODO: Determine if user is a tutor!
-                        window.location.replace("tutorUI/appointment.html");
+                        window.location.replace("appointment.html");
                     } else {
                         document.getElementById("login-login-failed-reason").innerHTML = response.failedReason;
                     }

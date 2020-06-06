@@ -168,7 +168,9 @@
 
         function markOccupied(officeHourId) {
             var toModify = calendar.getEventById(officeHourId);
-            if (toModify.extendedProps.available === "yes-me") {
+            if (toModify.extendedProps.available === "yes-me"||
+            toModify.extendedProps.available === "changed"||
+            toModify.extendedProps.available === "deleted") {
                 fetch("/appointmentByOfficeHourId?officeHourId=" + officeHourId).then(r => r.json()).then(r => {
                     toModify.setExtendedProp("description", r.description)
                     toModify.setExtendedProp("appointmentId", r.id)
@@ -301,11 +303,13 @@
                 {
                     start: e.start * 1000,
                     end: e.end * 1000,
-                    oriStart: e.start * 1000,
-                    oriEnd: e.end * 1000,
                     title: e.tutor,
                     id: e.id,
-                    available: e.tutor === uid ? "yes-me" : "yes",
+                    extendedProps:{
+                        oriStart: e.start * 1000,
+                        oriEnd: e.end * 1000,
+                        available: e.tutor === uid ? "yes-me" : "yes",
+                    },
                     editable: e.tutor === uid,
                     eventResizableFromStart: true
                 }
@@ -324,17 +328,21 @@
                 };
                 var appointment = myAppointments.get(e.id);
                 if (appointment) {
-                    e.available = appointment.status;
-                    e.appointmentId = appointment.id;
-                    e.description = appointment.description;
+                    e.extendedProps={
+                        oriStart: e.start,
+                        oriEnd: e.end,
+                        available:appointment.status,
+                        appointmentId:appointment.id,
+                        description:appointment.description
+                    }
                 } else {
-                    e.available = 'no'
+                    e.extendedProps={available:'no'}
                 }
                 events.push(e);
             });
             //initPeerListener()
             events.forEach(e => {
-                e.backgroundColor = colorMap.get(e.available)
+                e.backgroundColor = colorMap.get(e.extendedProps.available)
             });
             return events;
         }

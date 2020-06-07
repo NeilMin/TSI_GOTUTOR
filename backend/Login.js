@@ -35,7 +35,6 @@ module.exports=function (req, res) {
             })
             model.createUser(UID,'student',DUMMY_CLASSROOM).catch(e=>{console.log('already exist')});
             req.sessionOptions.maxAge = payload['exp'] * 1e3 - Date.now();
-            req.sessionOptions.httpOnly = false;
             userRole.then(function(){res.send(JSON.stringify({
                 success: true,
                 userInfos: (({name, email, picture}) => ({name, email, picture}))(payload)

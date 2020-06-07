@@ -119,6 +119,7 @@ app.get('/testUser', function (req, res) {
     })
     userRole.then(r=>{res.redirect("/testLanding.html")});
 });
+app.post('/googleAuth', login);
 
 app.use(function (req,res,next) {
     if (req.session.uid) {
@@ -224,8 +225,6 @@ app.post('/updateAppointment', function (req, res) {
     })
 })
 
-
-app.post('/googleAuth', login);
 
 app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
     const file = req.file;

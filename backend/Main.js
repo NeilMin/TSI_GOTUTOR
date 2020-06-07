@@ -100,9 +100,36 @@ sio.of('/forumReply').on('connection', function (socket) {
         })
     })
 });
+
 app.use('/', express.static('GOTUTOR_UI'));
 
 app.use(cookieSessionMiddleware);
+
+app.get('/testUser', function (req, res) {
+    req.session.uid = req.query.user;
+    model.createUser(req.query.user, 'student', DUMMY_CLASSROOM).catch(e => {
+        console.log('already exist')
+    });
+    var userRole=model.readClassroomByUser(req.query.user).then(r=>{
+        if (r.length===0) {
+            req.session.role = 'student';
+        }else{
+            req.session.role=r[0].role;
+        }
+    })
+    userRole.then(r=>{res.redirect("/testLanding.html")});
+});
+
+app.use(function (req,res,next) {
+    if (req.session.uid) {
+        next()
+    }else{
+        res.redirect('login.html');
+        console.log(req.url);
+    }
+})
+
+app.use('/', express.static('GOTUTOR_UI/shared'));
 
 app.use(function (req, res, next) {
     console.log(req.session.role)
@@ -127,6 +154,11 @@ app.get('/appointmentByOfficeHourId', function (req, res) {
             res.send(r)
         }
     )
+})
+
+app.get('/logout',function (req,res) {
+    req.session=null;
+    res.redirect('/login.html')
 })
 
 app.get('/isTutor', function (req, res) {
@@ -194,22 +226,6 @@ app.post('/updateAppointment', function (req, res) {
 
 
 app.post('/googleAuth', login);
-
-app.get('/testUser', function (req, res) {
-    req.session.uid = req.query.user;
-    model.createUser(req.query.user, 'student', DUMMY_CLASSROOM).catch(e => {
-        console.log('already exist')
-    });
-    var userRole=model.readClassroomByUser(req.query.user).then(r=>{
-        if (r.length===0) {
-            req.session.role = 'student';
-        }else{
-            req.session.role=r[0].role;
-        }
-    })
-    userRole.then(r=>{res.redirect("/testLanding.html")});
-});
-
 
 app.post('/uploadfile', upload.single('writeup.pdf'), (req, res, next) => {
     const file = req.file;
